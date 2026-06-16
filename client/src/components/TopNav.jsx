@@ -1,5 +1,6 @@
 import React from "react";
 import { Badge } from "./Badge.jsx";
+import { AccountMenu } from "./AccountMenu.jsx";
 
 /**
  * Top navigation bar. Wordmark flush left, the three product tabs (Stays /
@@ -17,8 +18,11 @@ export function TopNav({
   onSelect,
   user,
   onLogin,
+  onSignup,
   onLogout,
   onHostingClick,
+  onLanguage,
+  onComingSoon,
   style,
   ...rest
 }) {
@@ -85,26 +89,15 @@ export function TopNav({
         <button type="button" className="sl-pill sl-topnav__host" style={textPill} onClick={onHostingClick}>
           {user ? "Switch to hosting" : "Become a host"}
         </button>
-        <button type="button" aria-label="Language" className="sl-pill" style={iconDisc}><GlobeGlyph /></button>
-        {user ? (
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-            <span style={{
-              width: 32, height: 32, borderRadius: "var(--radius-full)",
-              background: "var(--color-primary)", color: "#fff", display: "inline-flex",
-              alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 600,
-            }}>{user.name.charAt(0).toUpperCase()}</span>
-            <button type="button" className="sl-pill" style={textPill} onClick={onLogout}>Log out</button>
-          </div>
-        ) : (
-          <button type="button" className="sl-account" style={accountPill} onClick={onLogin}>
-            <MenuGlyph />
-            <span style={{
-              width: 30, height: 30, borderRadius: "var(--radius-full)",
-              background: "var(--color-muted)", color: "#fff", display: "inline-flex",
-              alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 600,
-            }}><PersonGlyph /></span>
-          </button>
-        )}
+        <button type="button" aria-label="Language and currency" className="sl-pill" style={iconDisc} onClick={onLanguage}><GlobeGlyph /></button>
+        <AccountMenu
+          user={user}
+          onLogin={onLogin}
+          onSignup={onSignup}
+          onLogout={onLogout}
+          onHosting={onHostingClick}
+          onComingSoon={onComingSoon}
+        />
       </div>
     </header>
   );
@@ -120,11 +113,6 @@ const iconDisc = {
   cursor: "pointer", color: "var(--color-ink)",
   display: "inline-flex", alignItems: "center", justifyContent: "center",
 };
-const accountPill = {
-  display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 6px 5px 12px",
-  borderRadius: "var(--radius-full)", border: "1px solid var(--color-hairline)",
-  cursor: "pointer", color: "var(--color-ink)",
-};
 
 function ProductGlyph({ name }) {
   const common = { width: 26, height: 26, fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round" };
@@ -136,10 +124,4 @@ function ProductGlyph({ name }) {
 }
 function GlobeGlyph() {
   return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/></svg>);
-}
-function MenuGlyph() {
-  return (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>);
-}
-function PersonGlyph() {
-  return (<svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6z"/></svg>);
 }

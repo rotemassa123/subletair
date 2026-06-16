@@ -5,29 +5,33 @@ import { PropertyCard } from "../components/PropertyCard.jsx";
 import { fetchCategories, fetchListings, toggleSave } from "../api.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 
-export function Marketplace({ onRequireAuth }) {
+const TAB_KIND = { stays: "stay", experiences: "experience", services: "service" };
+const COMING_SOON = {
+  experiences: { title: "Experiences are coming soon", body: "Host-led activities, tours, and Originals will live here. For now, explore Stays." },
+  services: { title: "Services are coming soon", body: "Chefs, photographers, training, and more, bookable with or without a stay. For now, explore Stays." },
+};
+
+export function Marketplace({ tab = "stays", search, onSearch, onRequireAuth }) {
   const { user } = useAuth();
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState("all");
-  const [queryInput, setQueryInput] = useState("");
-  const [query, setQuery] = useState("");
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchCategories().then(setCategories).catch(() => setCategories([]));
-  }, []);
+  const kind = TAB_KIND[tab] || "stay";
+
+  useEffect(() => { fetchCategories().then(setCategories).catch(() => setCategories([])); }, []);
 
   useEffect(() => {
     let active = true;
     setLoading(true);
-    fetchListings({ category, q: query })
+    fetchListings({ category, kind, ...search })
       .then((rows) => { if (active) { setListings(rows); setError(null); } })
       .catch(() => active && setError("Couldn't load listings."))
       .finally(() => active && setLoading(false));
     return () => { active = false; };
-  }, [category, query, user]);
+  }, [category, kind, search, user]);
 
   async function handleToggleSave(id) {
     if (!user) return onRequireAuth();
@@ -40,41 +44,53 @@ export function Marketplace({ onRequireAuth }) {
     }
   }
 
+  const soon = COMING_SOON[tab];
+  const heading = search.location ? `Stays in ${search.location}` : "Inspiration for your next trip";
+
   return (
     <>
       <div className="sl-gutter sl-hero-in" style={{ display: "flex", justifyContent: "center", paddingTop: 20, paddingBottom: 24, borderBottom: "1px solid var(--color-hairline-soft)" }}>
-        <SearchBar query={queryInput} onQueryChange={setQueryInput} onSearch={() => setQuery(queryInput)} />
+        <SearchBar tab={tab} onSearch={onSearch} />
       </div>
 
       <main className="sl-gutter" style={{ maxWidth: "var(--container-editorial)", margin: "0 auto", paddingBottom: 64 }}>
-        {categories.length > 0 && (
-          <CategoryStrip categories={categories} active={category} onSelect={setCategory} />
+        {soon ? (
+          <div className="sl-hero-in" style={{ padding: "96px 0", textAlign: "center", maxWidth: 520, margin: "0 auto" }}>
+            <h1 style={{ fontSize: "var(--type-display-xl-size)", fontWeight: 700, margin: "0 0 12px" }}>{soon.title}</h1>
+            <p style={{ fontSize: 16, color: "var(--color-muted)", lineHeight: 1.5 }}>{soon.body}</p>
+          </div>
+        ) : (
+          <>
+            {categories.length > 0 && (
+              <CategoryStrip categories={categories} active={category} onSelect={setCategory} />
+            )}
+
+            <h1 className="sl-hero-in" style={{ fontSize: "var(--type-display-xl-size)", fontWeight: "var(--type-display-xl-weight)", lineHeight: "var(--type-display-xl-line)", margin: "24px 0", color: "var(--color-ink)" }}>
+              {heading}
+            </h1>
+
+            {error && <p style={{ color: "var(--color-error-text)" }}>{error}</p>}
+            {!error && !loading && listings.length === 0 && (
+              <p style={{ color: "var(--color-muted)" }}>No stays match your search. Try different dates, fewer guests, or another destination.</p>
+            )}
+
+            {/* keyed by the active filter so the whole grid re-reveals when results change */}
+            <div key={`${category}|${kind}|${search.location}|${search.checkIn}|${search.checkOut}|${search.guests}`} style={gridStyle}>
+              {loading
+                ? Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)
+                : listings.map((l, i) => (
+                    <PropertyCard
+                      key={l.id}
+                      className="sl-reveal"
+                      style={{ animationDelay: `${Math.min(i, 11) * 45}ms` }}
+                      image={l.image} title={l.title} subtitle={l.subtitle}
+                      price={l.price} rating={l.rating} badge={l.badge} saved={l.saved}
+                      onToggleSave={() => handleToggleSave(l.id)}
+                    />
+                  ))}
+            </div>
+          </>
         )}
-
-        <h1 className="sl-hero-in" style={{ fontSize: "var(--type-display-xl-size)", fontWeight: "var(--type-display-xl-weight)", lineHeight: "var(--type-display-xl-line)", margin: "24px 0", color: "var(--color-ink)" }}>
-          {query ? `Stays matching “${query}”` : "Inspiration for your next trip"}
-        </h1>
-
-        {error && <p style={{ color: "var(--color-error-text)" }}>{error}</p>}
-        {!error && !loading && listings.length === 0 && (
-          <p style={{ color: "var(--color-muted)" }}>No stays found. Try a different search or category.</p>
-        )}
-
-        {/* keyed by the active filter so the whole grid re-reveals when results change */}
-        <div key={`${category}|${query}`} style={gridStyle}>
-          {loading
-            ? Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)
-            : listings.map((l, i) => (
-                <PropertyCard
-                  key={l.id}
-                  className="sl-reveal"
-                  style={{ animationDelay: `${Math.min(i, 11) * 45}ms` }}
-                  image={l.image} title={l.title} subtitle={l.subtitle}
-                  price={l.price} rating={l.rating} badge={l.badge} saved={l.saved}
-                  onToggleSave={() => handleToggleSave(l.id)}
-                />
-              ))}
-        </div>
       </main>
     </>
   );
