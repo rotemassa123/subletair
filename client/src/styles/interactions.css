@@ -227,3 +227,20 @@
   box-shadow: var(--shadow-card); border: 1px solid var(--color-hairline-soft);
   animation: sl-fade-up 200ms var(--ease-out-quart) both;
 }
+
+/* ---------- Dropdown menu ---------- */
+.sl-menu {
+  position: absolute; top: calc(100% + 10px); right: 0; z-index: 60; min-width: 240px;
+  background: var(--color-canvas); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card); border: 1px solid var(--color-hairline-soft);
+  padding: 8px 0; animation: sl-fade-up 160ms var(--ease-out-quart) both;
+}
+.sl-menu__item {
+  display: flex; width: 100%; align-items: center; gap: 10px; padding: 10px 16px;
+  border: none; background: transparent; cursor: pointer; text-align: left;
+  font-size: 14px; color: var(--color-ink); font-family: var(--font-family-base);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+.sl-menu__item:hover { background: var(--color-surface-soft); }
+.sl-menu__item.is-strong { font-weight: 600; }
+.sl-menu__divider { height: 1px; background: var(--color-hairline-soft); margin: 8px 0; }
