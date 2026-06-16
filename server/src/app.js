@@ -98,7 +98,7 @@ export function createApp() {
     if (!existing) return res.status(404).json({ error: "Listing not found" });
     if (existing.owner_id !== req.user.id) return res.status(403).json({ error: "Not your listing" });
     if ("cat" in req.body && !categoryExists(req.body.cat)) return res.status(400).json({ error: "invalid category" });
-    const v = validateListingBody(req.body || {}, { partial: true });
+    const v = validateListingBody(req.body || {});
     if (v.error) return res.status(400).json({ error: v.error });
     const fields = {};
     for (const k of ["title", "subtitle", "cat", "badge", "location"]) if (k in req.body) fields[k] = req.body[k] || null;

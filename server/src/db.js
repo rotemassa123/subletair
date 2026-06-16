@@ -73,6 +73,25 @@ if (!listingCols.includes("guests")) db.exec("ALTER TABLE listings ADD COLUMN gu
 if (!listingCols.includes("kind")) db.exec("ALTER TABLE listings ADD COLUMN kind TEXT NOT NULL DEFAULT 'stay'");
 
 seedIfEmpty();
+backfillExisting();
+
+// Upgrade path: a DB seeded before this feature has listings with empty location
+// and no availability rows (invisible to location/date filters). Backfill the
+// known seed values and give every listing at least one availability window.
+function backfillExisting() {
+  const setMeta = db.prepare(
+    "UPDATE listings SET location=@location, guests=@guests WHERE id=@id AND (location='' OR location IS NULL)"
+  );
+  for (const l of listings) setMeta.run({ id: l.id, location: l.location, guests: l.guests });
+
+  const missing = db
+    .prepare("SELECT id FROM listings WHERE id NOT IN (SELECT listing_id FROM availability)")
+    .all();
+  for (const { id } of missing) {
+    const win = demoAvailability[id] || demoAvailability.default;
+    setAvailability(id, win.start, win.end);
+  }
+}
 
 function seedIfEmpty() {
   const count = db.prepare("SELECT COUNT(*) AS n FROM listings").get().n;
