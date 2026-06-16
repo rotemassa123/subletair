@@ -1,0 +1,217 @@
+/* Subletair — Interaction & motion layer
+   Inline styles in components cannot express :hover / :focus-visible / @media.
+   This stylesheet owns every state change, transition, and responsive rule.
+   Components attach these classes and keep only layout/dynamic props inline.
+
+   Contract (DESIGN.md): ease-out only, 150–250ms, coral under ~10%, flat at rest,
+   sticky chrome, nav collapses below 744px, active = color + weight/underline. */
+
+/* ---------- Global focus + keyboard affordance ---------- */
+:where(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---------- Top navigation ---------- */
+.sl-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  /* hairline already on the element; lift it subtly once the page scrolls under it */
+  transition: box-shadow var(--duration-base) var(--ease-standard);
+}
+
+.sl-nav-tab {
+  background: transparent;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-base) var(--ease-standard),
+              color var(--duration-fast) var(--ease-standard);
+}
+.sl-nav-tab:hover { background: var(--color-surface-soft); }
+
+.sl-pill {
+  background: transparent;
+  transition: background-color var(--duration-base) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+}
+.sl-pill:hover { background: var(--color-surface-soft); }
+.sl-pill:active { transform: scale(0.97); }
+
+/* account pill keeps its outlined surface but still highlights on hover */
+.sl-account {
+  background: var(--color-canvas);
+  transition: background-color var(--duration-base) var(--ease-standard),
+              box-shadow var(--duration-base) var(--ease-standard);
+}
+.sl-account:hover { background: var(--color-surface-soft); box-shadow: var(--shadow-card); }
+
+/* ---------- Search bar ---------- */
+.sl-search {
+  box-shadow: var(--shadow-card);
+  transition: box-shadow var(--duration-base) var(--ease-standard);
+}
+.sl-search:focus-within { box-shadow: rgba(0,0,0,0.04) 0 0 0 1px, rgba(0,0,0,0.08) 0 6px 16px 0; }
+
+.sl-search-seg {
+  background: transparent;
+  border-radius: var(--radius-full);
+  transition: background-color var(--duration-base) var(--ease-standard);
+}
+.sl-search-seg:hover { background: var(--color-surface-soft); }
+
+.sl-search-orb {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              transform var(--duration-base) var(--ease-standard);
+}
+.sl-search-orb:hover { transform: scale(1.05); }
+.sl-search-orb:active { transform: scale(0.96); background: var(--color-primary-active); }
+
+/* ---------- Category strip ---------- */
+.sl-chip {
+  color: var(--color-muted);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+.sl-chip:hover { color: var(--color-ink); }
+.sl-chip.is-active { color: var(--color-ink); }
+.sl-chip__label { font-weight: 500; transition: font-weight var(--duration-fast) var(--ease-standard); }
+.sl-chip.is-active .sl-chip__label { font-weight: 700; }
+.sl-chip .sl-chip__rule { transition: background-color var(--duration-fast) var(--ease-standard); }
+
+/* ---------- Property card ---------- */
+.sl-card { cursor: pointer; }
+.sl-card .sl-card__photo img {
+  transition: transform var(--duration-base) var(--ease-out-quart);
+  will-change: transform;
+}
+.sl-card:hover .sl-card__photo img { transform: scale(1.045); }
+.sl-card .sl-card__photo {
+  transition: box-shadow var(--duration-base) var(--ease-standard);
+}
+.sl-card:hover .sl-card__photo { box-shadow: var(--shadow-card); }
+.sl-card:active .sl-card__photo img { transform: scale(1.02); }
+
+/* ---------- Wishlist heart ---------- */
+.sl-heart { transition: transform var(--duration-fast) var(--ease-standard); }
+.sl-heart:hover { transform: scale(1.12); }
+.sl-heart:active { transform: scale(0.88); }
+.sl-heart.is-saved { animation: sl-heart-pop var(--duration-base) var(--ease-standard); }
+@keyframes sl-heart-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- Buttons ---------- */
+.sl-btn-primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-base) var(--ease-standard);
+}
+.sl-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+.sl-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+  background: var(--color-primary-active);
+}
+.sl-btn-primary:disabled { background: var(--color-primary-disabled); cursor: not-allowed; }
+
+.sl-btn-outline {
+  background: var(--color-canvas);
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+}
+.sl-btn-outline:hover { background: var(--color-surface-soft); }
+.sl-btn-outline:active { transform: scale(0.98); }
+
+/* ---------- Form fields ---------- */
+.sl-field {
+  border: 1px solid var(--color-hairline);
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              box-shadow var(--duration-fast) var(--ease-standard);
+}
+.sl-field:hover { border-color: var(--color-border-strong); }
+.sl-field:focus {
+  border-color: var(--color-ink);
+  box-shadow: 0 0 0 3px rgba(34, 34, 34, 0.08);
+  outline: none;
+}
+
+/* ---------- Entrance & content reveal (the animation layer) ---------- */
+/* Hero: cards rise + fade in. Marketplace staggers them via inline animation-delay
+   and replays the whole grid on filter/search change by keying the container. */
+.sl-reveal {
+  animation: sl-card-in var(--duration-slow) var(--ease-standard) both;
+}
+@keyframes sl-card-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* The hero chrome (search bar + heading) fades up once on first paint. */
+.sl-hero-in { animation: sl-fade-up 480ms var(--ease-out-quart) both; }
+@keyframes sl-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Loading choreography: shimmer skeletons stand in for cards, then real content
+   reveals over them. Calmer than a spinner, and holds layout (no CLS). */
+.sl-skel {
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    100deg,
+    var(--color-surface-soft) 30%,
+    var(--color-surface-strong) 50%,
+    var(--color-surface-soft) 70%
+  );
+  background-size: 200% 100%;
+  animation: sl-shimmer 1.3s ease-in-out infinite;
+}
+@keyframes sl-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* ---------- Modal entrance ---------- */
+.sl-scrim { animation: sl-fade-in var(--duration-base) var(--ease-standard); }
+.sl-modal { animation: sl-modal-in var(--duration-slow) var(--ease-out-expo); }
+@keyframes sl-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sl-modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------- Responsive: collapse nav, tighten gutters ---------- */
+.sl-gutter { padding-left: 40px; padding-right: 40px; }
+
+@media (max-width: 743px) {
+  /* The top nav cannot keep its desktop row; hide the centered product tabs and
+     the "Become a host" text so the bar fits a phone without horizontal scroll. */
+  .sl-topnav__products { display: none !important; }
+  .sl-topnav__host { display: none !important; }
+  .sl-header { padding-left: 20px !important; padding-right: 20px !important; }
+  .sl-gutter { padding-left: 20px; padding-right: 20px; }
+  /* collapse the signature search bar to "Where + orb" so it fits a phone */
+  .sl-search { width: 100% !important; padding: 0 8px 0 0 !important; }
+  .sl-search-extra { display: none !important; }
+  .sl-search .sl-search-where { flex: 1 1 auto; min-width: 0; padding: 8px 16px !important; }
+  .sl-search .sl-search-where input { width: 100% !important; }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

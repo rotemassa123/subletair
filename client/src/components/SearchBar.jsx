@@ -26,6 +26,7 @@ export function SearchBar({
   return (
     <form
       onSubmit={handleSubmit}
+      className="sl-search"
       style={{
         display: "flex",
         alignItems: "center",
@@ -34,7 +35,6 @@ export function SearchBar({
         borderRadius: "var(--radius-full)",
         background: "var(--color-canvas)",
         border: "1px solid var(--color-hairline)",
-        boxShadow: "var(--shadow-card)",
         fontFamily: "var(--font-family-base)",
         width: "fit-content",
         maxWidth: "100%",
@@ -43,6 +43,7 @@ export function SearchBar({
       {...rest}
     >
       <label
+        className="sl-search-seg sl-search-where"
         style={{
           display: "flex",
           flexDirection: "column",
@@ -75,10 +76,11 @@ export function SearchBar({
 
       {segments.map((seg, i) => (
         <React.Fragment key={i}>
-          <span style={{ width: 1, height: 30, background: "var(--color-hairline)" }} />
+          <span className="sl-search-extra" style={{ width: 1, height: 30, background: "var(--color-hairline)" }} />
           <button
             type="button"
             onClick={() => onSegmentClick && onSegmentClick(i)}
+            className="sl-search-seg sl-search-extra"
             style={{
               display: "flex",
               flexDirection: "column",
@@ -86,7 +88,6 @@ export function SearchBar({
               gap: 2,
               padding: "8px 24px",
               border: "none",
-              background: "transparent",
               borderRadius: "var(--radius-full)",
               cursor: "pointer",
               textAlign: "left",
@@ -102,7 +103,7 @@ export function SearchBar({
         </React.Fragment>
       ))}
 
-      <button type="submit" aria-label="Search" style={{ ...orbStyle(48), border: "none", cursor: "pointer", marginLeft: 8 }}>
+      <button type="submit" aria-label="Search" className="sl-search-orb" style={{ ...orbStyle(48), border: "none", cursor: "pointer", marginLeft: 8 }}>
         <SearchGlyph size={18} />
       </button>
     </form>
@@ -114,8 +115,6 @@ function orbStyle(size) {
     width: size,
     height: size,
     borderRadius: "var(--radius-full)",
-    background: "var(--color-primary)",
-    color: "var(--color-on-primary)",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",

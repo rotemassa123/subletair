@@ -10,7 +10,7 @@ export function TopNav({
   logoSrc = "/logo.svg",
   products = [
     { key: "stays", label: "Stays", icon: "stay" },
-    { key: "experiences", label: "Experiences", icon: "balloon", isNew: true },
+    { key: "experiences", label: "Experiences", icon: "bulb", isNew: true },
     { key: "services", label: "Services", icon: "bell", isNew: true },
   ],
   active = "stays",
@@ -24,6 +24,7 @@ export function TopNav({
 }) {
   return (
     <header
+      className="sl-header"
       style={{
         height: 80,
         background: "var(--color-canvas)",
@@ -39,7 +40,7 @@ export function TopNav({
     >
       <img src={logoSrc} alt="Subletair" height="30" style={{ flex: "0 0 auto" }} />
 
-      <nav style={{ display: "flex", gap: 8 }}>
+      <nav className="sl-topnav__products" style={{ display: "flex", gap: 8 }}>
         {products.map((p) => {
           const isActive = p.key === active;
           return (
@@ -47,6 +48,7 @@ export function TopNav({
               key={p.key}
               type="button"
               onClick={() => onSelect && onSelect(p.key)}
+              className="sl-nav-tab"
               style={{
                 position: "relative",
                 display: "flex",
@@ -55,7 +57,6 @@ export function TopNav({
                 gap: 4,
                 padding: "10px 12px 8px",
                 border: "none",
-                background: "transparent",
                 cursor: "pointer",
                 color: isActive ? "var(--color-ink)" : "var(--color-muted)",
               }}
@@ -81,10 +82,10 @@ export function TopNav({
       </nav>
 
       <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "0 0 auto" }}>
-        <button type="button" style={textPill} onClick={onHostingClick}>
+        <button type="button" className="sl-pill sl-topnav__host" style={textPill} onClick={onHostingClick}>
           {user ? "Switch to hosting" : "Become a host"}
         </button>
-        <button type="button" aria-label="Language" style={iconDisc}><GlobeGlyph /></button>
+        <button type="button" aria-label="Language" className="sl-pill" style={iconDisc}><GlobeGlyph /></button>
         {user ? (
           <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
             <span style={{
@@ -92,10 +93,10 @@ export function TopNav({
               background: "var(--color-primary)", color: "#fff", display: "inline-flex",
               alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 600,
             }}>{user.name.charAt(0).toUpperCase()}</span>
-            <button type="button" style={textPill} onClick={onLogout}>Log out</button>
+            <button type="button" className="sl-pill" style={textPill} onClick={onLogout}>Log out</button>
           </div>
         ) : (
-          <button type="button" style={accountPill} onClick={onLogin}>
+          <button type="button" className="sl-account" style={accountPill} onClick={onLogin}>
             <MenuGlyph />
             <span style={{
               width: 30, height: 30, borderRadius: "var(--radius-full)",
@@ -110,25 +111,25 @@ export function TopNav({
 }
 
 const textPill = {
-  border: "none", background: "transparent", cursor: "pointer",
+  border: "none", cursor: "pointer",
   fontFamily: "var(--font-family-base)", fontSize: 14, fontWeight: 600,
   color: "var(--color-ink)", padding: "10px 14px", borderRadius: "var(--radius-full)",
 };
 const iconDisc = {
   width: 40, height: 40, borderRadius: "var(--radius-full)", border: "none",
-  background: "transparent", cursor: "pointer", color: "var(--color-ink)",
+  cursor: "pointer", color: "var(--color-ink)",
   display: "inline-flex", alignItems: "center", justifyContent: "center",
 };
 const accountPill = {
   display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 6px 5px 12px",
   borderRadius: "var(--radius-full)", border: "1px solid var(--color-hairline)",
-  background: "var(--color-canvas)", cursor: "pointer", color: "var(--color-ink)",
+  cursor: "pointer", color: "var(--color-ink)",
 };
 
 function ProductGlyph({ name }) {
   const common = { width: 26, height: 26, fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round" };
-  if (name === "balloon")
-    return (<svg viewBox="0 0 24 24" {...common}><path d="M12 3c3.3 0 6 2.7 6 6 0 4-3.5 7-6 7s-6-3-6-7c0-3.3 2.7-6 6-6z"/><path d="M12 16v2m-1 3h2"/></svg>);
+  if (name === "bulb")
+    return (<svg viewBox="0 0 24 24" {...common}><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.45 1 1.15 1 1.95v.15h5v-.15c0-.8.4-1.5 1-1.95A6 6 0 0 0 12 3z"/><path d="M9.5 19h5M10.5 21h3"/></svg>);
   if (name === "bell")
     return (<svg viewBox="0 0 24 24" {...common}><path d="M6 16V10a6 6 0 1112 0v6l1.5 2H4.5L6 16z"/><path d="M10 21h4"/></svg>);
   return (<svg viewBox="0 0 24 24" {...common}><path d="M3 11l9-7 9 7"/><path d="M5 10v9h14v-9"/><path d="M10 19v-5h4v5"/></svg>);

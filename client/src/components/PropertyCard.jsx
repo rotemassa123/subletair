@@ -18,11 +18,13 @@ export function PropertyCard({
   saved = false,
   onToggleSave,
   aspect = "1 / 1",
+  className,
   style,
   ...rest
 }) {
   return (
     <div
+      className={className ? `sl-card ${className}` : "sl-card"}
       style={{
         fontFamily: "var(--font-family-base)",
         color: "var(--color-ink)",
@@ -32,6 +34,7 @@ export function PropertyCard({
       {...rest}
     >
       <div
+        className="sl-card__photo"
         style={{
           position: "relative",
           aspectRatio: aspect,
@@ -60,6 +63,7 @@ export function PropertyCard({
             active={saved}
             size={32}
             onClick={onToggleSave}
+            className={saved ? "sl-heart is-saved" : "sl-heart"}
           >
             <HeartGlyph filled={saved} />
           </IconButton>

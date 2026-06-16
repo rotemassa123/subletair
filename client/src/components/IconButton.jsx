@@ -12,6 +12,7 @@ export function IconButton({
   active = false,
   ariaLabel,
   onClick,
+  className,
   style,
   ...rest
 }) {
@@ -38,6 +39,7 @@ export function IconButton({
       type="button"
       aria-label={ariaLabel}
       onClick={onClick}
+      className={className}
       style={{
         width: size,
         height: size,
@@ -47,7 +49,6 @@ export function IconButton({
         justifyContent: "center",
         cursor: "pointer",
         padding: 0,
-        transition: "background-color 150ms ease, transform 150ms ease",
         color: active ? "var(--color-primary)" : variants[variant].color,
         ...variants[variant],
         ...style,
