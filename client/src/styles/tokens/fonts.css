@@ -1,0 +1,13 @@
+/* Subletair — Webfonts
+   The brand runs "Subletair Cereal VF" (a licensed variable font). It is not
+   bundled here; Inter is the closest open substitute and is loaded from Google
+   Fonts. Drop the real font binaries in assets/fonts/ and swap the @font-face
+   src below to ship the true brand face. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Cereal first (if a consumer has it installed), then Circular, then the
+     Inter substitute, then the system stack. */
+  --font-sans: 'Subletair Cereal VF', Circular, 'Inter', -apple-system,
+    system-ui, Roboto, 'Helvetica Neue', sans-serif;
+}

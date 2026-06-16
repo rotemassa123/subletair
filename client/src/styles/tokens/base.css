@@ -1,0 +1,102 @@
+/* Subletair — Base reset + type utility classes
+   Convenience classes that compose the typography tokens. Components reference
+   the raw custom properties; cards and kits can use these helpers. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  color: var(--color-ink);
+  background: var(--color-canvas);
+  font-size: var(--type-body-md-size);
+  line-height: var(--type-body-md-line);
+}
+
+/* type helpers — each maps one named scale token */
+.sl-rating-display {
+  font-size: var(--type-rating-display-size);
+  font-weight: var(--type-rating-display-weight);
+  line-height: var(--type-rating-display-line);
+  letter-spacing: var(--type-rating-display-tracking);
+}
+.sl-display-xl {
+  font-size: var(--type-display-xl-size);
+  font-weight: var(--type-display-xl-weight);
+  line-height: var(--type-display-xl-line);
+  letter-spacing: var(--type-display-xl-tracking);
+}
+.sl-display-lg {
+  font-size: var(--type-display-lg-size);
+  font-weight: var(--type-display-lg-weight);
+  line-height: var(--type-display-lg-line);
+  letter-spacing: var(--type-display-lg-tracking);
+}
+.sl-display-md {
+  font-size: var(--type-display-md-size);
+  font-weight: var(--type-display-md-weight);
+  line-height: var(--type-display-md-line);
+  letter-spacing: var(--type-display-md-tracking);
+}
+.sl-display-sm {
+  font-size: var(--type-display-sm-size);
+  font-weight: var(--type-display-sm-weight);
+  line-height: var(--type-display-sm-line);
+  letter-spacing: var(--type-display-sm-tracking);
+}
+.sl-title-md {
+  font-size: var(--type-title-md-size);
+  font-weight: var(--type-title-md-weight);
+  line-height: var(--type-title-md-line);
+}
+.sl-title-sm {
+  font-size: var(--type-title-sm-size);
+  font-weight: var(--type-title-sm-weight);
+  line-height: var(--type-title-sm-line);
+}
+.sl-body-md {
+  font-size: var(--type-body-md-size);
+  font-weight: var(--type-body-md-weight);
+  line-height: var(--type-body-md-line);
+}
+.sl-body-sm {
+  font-size: var(--type-body-sm-size);
+  font-weight: var(--type-body-sm-weight);
+  line-height: var(--type-body-sm-line);
+}
+.sl-caption {
+  font-size: var(--type-caption-size);
+  font-weight: var(--type-caption-weight);
+  line-height: var(--type-caption-line);
+}
+.sl-caption-sm {
+  font-size: var(--type-caption-sm-size);
+  font-weight: var(--type-caption-sm-weight);
+  line-height: var(--type-caption-sm-line);
+}
+.sl-badge {
+  font-size: var(--type-badge-size);
+  font-weight: var(--type-badge-weight);
+  line-height: var(--type-badge-line);
+}
+.sl-uppercase-tag {
+  font-size: var(--type-uppercase-tag-size);
+  font-weight: var(--type-uppercase-tag-weight);
+  line-height: var(--type-uppercase-tag-line);
+  letter-spacing: var(--type-uppercase-tag-tracking);
+  text-transform: uppercase;
+}
+.sl-nav-link {
+  font-size: var(--type-nav-link-size);
+  font-weight: var(--type-nav-link-weight);
+  line-height: var(--type-nav-link-line);
+}

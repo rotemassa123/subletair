@@ -1,0 +1,39 @@
+/* Subletair — Color tokens
+   Single brand voltage (Rausch-style coral) over a pure-white canvas. */
+:root {
+  /* Brand & accent */
+  --color-primary: #ff385c;            /* Subletair coral — the one brand voltage */
+  --color-primary-active: #e00b41;     /* pointer-down / press */
+  --color-primary-disabled: #ffd1da;   /* pale tint on disabled CTAs */
+  --color-luxe: #460479;               /* sub-brand: Subletair Luxe */
+  --color-plus: #92174d;               /* sub-brand: Subletair Plus */
+
+  /* Surfaces */
+  --color-canvas: #ffffff;             /* default page floor */
+  --color-surface-soft: #f7f7f7;       /* disabled fields, sub-nav hover, filter band */
+  --color-surface-card: #ffffff;       /* card surface */
+  --color-surface-strong: #f2f2f2;     /* circular icon-button fill */
+
+  /* Hairlines & borders */
+  --color-hairline: #dddddd;           /* default 1px border tone */
+  --color-hairline-soft: #ebebeb;      /* lighter editorial divider */
+  --color-border-strong: #c1c1c1;      /* disabled outline / focused input */
+
+  /* Text */
+  --color-ink: #222222;                /* dominant text — never pure black */
+  --color-body: #3f3f3f;               /* secondary running text */
+  --color-muted: #6a6a6a;              /* sub-titles, inactive tabs, "View all" */
+  --color-muted-soft: #929292;         /* disabled link text */
+  --color-star-rating: #222222;        /* ink, not gold — deliberate */
+  --color-on-primary: #ffffff;         /* text on coral CTAs */
+  --color-on-dark: #ffffff;            /* text on dark fills */
+
+  /* Semantic */
+  --color-error-text: #c13515;         /* inline form error */
+  --color-error-text-hover: #b32505;   /* error link hover */
+  --color-legal-link: #428bff;         /* links inside legal copy only */
+
+  /* Scrim */
+  --color-scrim: #000000;              /* modal backdrop base — rendered at 50% */
+  --color-scrim-translucent: rgba(0, 0, 0, 0.5);
+}
