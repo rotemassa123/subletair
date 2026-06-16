@@ -105,6 +105,10 @@ export function getCategories() {
   return db.prepare("SELECT key,label FROM categories ORDER BY sort").all();
 }
 
+export function categoryExists(key) {
+  return !!db.prepare("SELECT 1 FROM categories WHERE key = ?").get(key);
+}
+
 export function getListings({ category = "all", q = "", user = null, ownerId = null } = {}) {
   const clauses = [];
   const params = {};

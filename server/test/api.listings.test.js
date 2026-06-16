@@ -65,6 +65,37 @@ test("save toggle is per-user and requires auth", async () => {
   assert.equal(off.saved, false);
 });
 
+test("disallowed file type is rejected with 400", async () => {
+  const token = await register("badfile@test.com");
+  const fd = new FormData();
+  fd.set("title", "Bad upload"); fd.set("price", "100"); fd.set("cat", "cabin");
+  fd.set("photo", new Blob(["hello"], { type: "text/plain" }), "note.txt");
+  const res = await fetch(base + "/api/listings", {
+    method: "POST", headers: { authorization: `Bearer ${token}` }, body: fd,
+  });
+  assert.equal(res.status, 400);
+});
+
+test("nonexistent category is rejected with 400", async () => {
+  const token = await register("badcat@test.com");
+  const fd = new FormData();
+  fd.set("title", "Bad cat"); fd.set("price", "100"); fd.set("cat", "nope");
+  const res = await fetch(base + "/api/listings", {
+    method: "POST", headers: { authorization: `Bearer ${token}` }, body: fd,
+  });
+  assert.equal(res.status, 400);
+});
+
+test("non-numeric price is rejected with 400", async () => {
+  const token = await register("badprice@test.com");
+  const fd = new FormData();
+  fd.set("title", "Bad price"); fd.set("price", "abc"); fd.set("cat", "cabin");
+  const res = await fetch(base + "/api/listings", {
+    method: "POST", headers: { authorization: `Bearer ${token}` }, body: fd,
+  });
+  assert.equal(res.status, 400);
+});
+
 test("listings/mine returns only my listings", async () => {
   const token = await register("mine@test.com");
   const fd = new FormData();

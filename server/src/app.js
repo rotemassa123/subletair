@@ -3,7 +3,7 @@ import cors from "cors";
 import {
   getCategories, getListings, getListing, createListing,
   updateListing, deleteListing, toggleSaved,
-  createUser, getUserByEmail, publicUser,
+  createUser, getUserByEmail, publicUser, categoryExists,
 } from "./db.js";
 import { hashPassword, verifyPassword, signToken, authRequired, authOptional } from "./auth.js";
 import { uploadSingle, fileUrl } from "./uploads.js";
@@ -59,6 +59,11 @@ export function createApp() {
   api.post("/listings", authRequired, uploadSingle, (req, res) => {
     const { title, subtitle, price, cat, rating, badge } = req.body || {};
     if (!title || !price || !cat) return res.status(400).json({ error: "title, price, cat required" });
+    if (cat && !categoryExists(cat)) return res.status(400).json({ error: "invalid category" });
+    const priceNum = Number(price);
+    if (!Number.isFinite(priceNum) || priceNum <= 0) {
+      return res.status(400).json({ error: "price must be a positive number" });
+    }
     const listing = createListing({
       title,
       subtitle: subtitle || null,
@@ -77,6 +82,15 @@ export function createApp() {
     const existing = getListing(id);
     if (!existing) return res.status(404).json({ error: "Listing not found" });
     if (existing.owner_id !== req.user.id) return res.status(403).json({ error: "Not your listing" });
+    if ("cat" in req.body && req.body.cat && !categoryExists(req.body.cat)) {
+      return res.status(400).json({ error: "invalid category" });
+    }
+    if ("price" in req.body) {
+      const priceNum = Number(req.body.price);
+      if (!Number.isFinite(priceNum) || priceNum <= 0) {
+        return res.status(400).json({ error: "price must be a positive number" });
+      }
+    }
     const fields = {};
     for (const k of ["title", "subtitle", "cat", "badge"]) if (k in req.body) fields[k] = req.body[k] || null;
     if ("price" in req.body) fields.price = Math.round(Number(req.body.price)) || 0;
@@ -102,5 +116,11 @@ export function createApp() {
   });
 
   app.use("/api", api);
+
+  // Global JSON error handler — keeps error responses JSON-shaped.
+  app.use((err, _req, res, _next) => {
+    res.status(err.status || 500).json({ error: err.message || "Internal error" });
+  });
+
   return app;
 }

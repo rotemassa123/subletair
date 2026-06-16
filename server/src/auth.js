@@ -2,7 +2,15 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { getUserById } from "./db.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "subletair-dev-secret-change-me";
+const JWT_SECRET = resolveJwtSecret();
+
+function resolveJwtSecret() {
+  if (process.env.JWT_SECRET) return process.env.JWT_SECRET;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("JWT_SECRET must be set in production");
+  }
+  return "subletair-dev-secret-change-me";
+}
 const TOKEN_TTL = "7d";
 
 export function hashPassword(plain) {

@@ -21,7 +21,8 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (_req, file, cb) => cb(null, ALLOWED.has(file.mimetype)),
+  fileFilter: (_req, file, cb) =>
+    ALLOWED.has(file.mimetype) ? cb(null, true) : cb(new Error("unsupported file type")),
 });
 
 // Accept a single optional file under field "photo". Wrap to convert multer
