@@ -12,6 +12,13 @@ export function AuthProvider({ children }) {
     api.me().then(setUser).catch(() => api.setToken(null)).finally(() => setReady(true));
   }, []);
 
+  // Flip to logged-out when any authenticated request reports an expired token.
+  useEffect(() => {
+    const onUnauthorized = () => setUser(null);
+    window.addEventListener("subletair:unauthorized", onUnauthorized);
+    return () => window.removeEventListener("subletair:unauthorized", onUnauthorized);
+  }, []);
+
   async function login(email, password) {
     const { token, user } = await api.login({ email, password });
     api.setToken(token);

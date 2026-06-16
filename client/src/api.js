@@ -17,7 +17,16 @@ function authHeaders(extra = {}) {
 
 async function json(res) {
   const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(body.error || `Request failed: ${res.status}`);
+  if (!res.ok) {
+    // A 401 while a token was attached means the session expired/was revoked.
+    // Clear it and let the app flip to logged-out (login attempts have no token,
+    // so their 401 — bad credentials — won't trip this).
+    if (res.status === 401 && authToken) {
+      setToken(null);
+      window.dispatchEvent(new Event("subletair:unauthorized"));
+    }
+    throw new Error(body.error || `Request failed: ${res.status}`);
+  }
   return body;
 }
 
