@@ -4,3 +4,6 @@ dist/
 .DS_Store
 .env
 .playwright-mcp/
+server/data/
+server/uploads/*
+!server/uploads/.gitkeep

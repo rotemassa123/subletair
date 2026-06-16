@@ -135,3 +135,10 @@ export const listings = [
     cat: "cabin",
   },
 ];
+
+export const demoHost = {
+  name: "Subletair Demo Host",
+  email: "demo@subletair.test",
+  // bcrypt hash of "password123"
+  password: "password123",
+};
