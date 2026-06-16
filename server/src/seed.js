@@ -23,6 +23,8 @@ export const listings = [
     badge: "Guest favorite",
     image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=80",
     cat: "loft",
+    location: "San Francisco",
+    guests: 3,
   },
   {
     id: 2,
@@ -33,6 +35,8 @@ export const listings = [
     badge: "New",
     image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80",
     cat: "city",
+    location: "Lisbon",
+    guests: 2,
   },
   {
     id: 3,
@@ -43,6 +47,8 @@ export const listings = [
     badge: "Guest favorite",
     image: "https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=800&q=80",
     cat: "cabin",
+    location: "Tahoe",
+    guests: 6,
   },
   {
     id: 4,
@@ -53,6 +59,8 @@ export const listings = [
     badge: null,
     image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800&q=80",
     cat: "city",
+    location: "Lisbon",
+    guests: 4,
   },
   {
     id: 5,
@@ -63,6 +71,8 @@ export const listings = [
     badge: "Guest favorite",
     image: "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=800&q=80",
     cat: "beach",
+    location: "Tofino",
+    guests: 5,
   },
   {
     id: 6,
@@ -73,6 +83,8 @@ export const listings = [
     badge: "New",
     image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
     cat: "design",
+    location: "Mexico City",
+    guests: 4,
   },
   {
     id: 7,
@@ -83,6 +95,8 @@ export const listings = [
     badge: null,
     image: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&q=80",
     cat: "tiny",
+    location: "Catskills",
+    guests: 2,
   },
   {
     id: 8,
@@ -93,6 +107,8 @@ export const listings = [
     badge: "Guest favorite",
     image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
     cat: "country",
+    location: "Cotswolds",
+    guests: 6,
   },
   {
     id: 9,
@@ -103,6 +119,8 @@ export const listings = [
     badge: "Guest favorite",
     image: "https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=800&q=80",
     cat: "lake",
+    location: "Lake Tahoe",
+    guests: 8,
   },
   {
     id: 10,
@@ -113,6 +131,8 @@ export const listings = [
     badge: "New",
     image: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800&q=80",
     cat: "loft",
+    location: "Kyoto",
+    guests: 3,
   },
   {
     id: 11,
@@ -123,6 +143,8 @@ export const listings = [
     badge: null,
     image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80",
     cat: "country",
+    location: "Oaxaca",
+    guests: 5,
   },
   {
     id: 12,
@@ -133,8 +155,18 @@ export const listings = [
     badge: "Guest favorite",
     image: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=800&q=80",
     cat: "cabin",
+    location: "Catskills",
+    guests: 4,
   },
 ];
+
+// Availability windows for the demo data (ISO dates). Wide-open unless noted.
+export const demoAvailability = {
+  default: { start: "2026-01-01", end: "2026-12-31" },
+  // narrower windows to make date filtering observable
+  3: { start: "2026-07-01", end: "2026-07-31" }, // Pine cabin — July only
+  5: { start: "2026-08-01", end: "2026-08-31" }, // Beach bungalow — August only
+};
 
 export const demoHost = {
   name: "Subletair Demo Host",
