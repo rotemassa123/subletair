@@ -7,3 +7,7 @@ dist/
 server/data/
 server/uploads/*
 !server/uploads/.gitkeep
+
+# local QA artifacts (not part of the app)
+qa-baseline-*.png
+docs/qa/

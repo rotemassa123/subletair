@@ -32,7 +32,7 @@ export default function App() {
         <Route path="/hosting" element={<Hosting onRequireAuth={() => setAuthOpen(true)} />} />
       </Routes>
 
-      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+      {authOpen && <AuthModal open onClose={() => setAuthOpen(false)} />}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ListingForm } from "../components/ListingForm.jsx";
 import { PropertyCard } from "../components/PropertyCard.jsx";
 import { useAuth } from "../auth/AuthContext.jsx";
@@ -6,6 +7,7 @@ import { fetchCategories, fetchMyListings, createListing, updateListing, deleteL
 
 export function Hosting({ onRequireAuth }) {
   const { user, ready } = useAuth();
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [mine, setMine] = useState([]);
   const [editing, setEditing] = useState(null); // listing being edited, or "new", or null
@@ -15,7 +17,7 @@ export function Hosting({ onRequireAuth }) {
 
   useEffect(() => {
     if (!ready) return;
-    if (!user) { onRequireAuth(); return; }
+    if (!user) { onRequireAuth(); navigate("/"); return; }
     refresh();
   }, [ready, user]);
 
@@ -27,8 +29,13 @@ export function Hosting({ onRequireAuth }) {
   async function handleCreate(fd) { await createListing(fd); setEditing(null); refresh(); }
   async function handleUpdate(id, fd) { await updateListing(id, fd); setEditing(null); refresh(); }
   async function handleDelete(id) {
-    if (!confirm("Delete this listing?")) return;
-    await deleteListing(id); refresh();
+    if (!window.confirm("Delete this listing?")) return;
+    try {
+      await deleteListing(id);
+      refresh();
+    } catch (err) {
+      window.alert(err.message);
+    }
   }
 
   if (!ready) return null;

@@ -8,7 +8,7 @@ export function ListingForm({ categories, initial = null, onSubmit, onCancel }) 
   const [title, setTitle] = useState(initial?.title || "");
   const [subtitle, setSubtitle] = useState(initial?.subtitle || "");
   const [price, setPrice] = useState(initial?.price || "");
-  const [cat, setCat] = useState(initial?.cat || (categories[1]?.key ?? "loft"));
+  const [cat, setCat] = useState(initial?.cat || (categories.find((c) => c.key !== "all")?.key ?? ""));
   const [rating, setRating] = useState(initial?.rating || "");
   const [badge, setBadge] = useState(initial?.badge || "");
   const [file, setFile] = useState(null);
