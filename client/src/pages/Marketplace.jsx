@@ -24,6 +24,9 @@ export function Marketplace({ tab = "stays", search, onSearch, onRequireAuth }) 
   useEffect(() => { fetchCategories().then(setCategories).catch(() => setCategories([])); }, []);
 
   useEffect(() => {
+    // Experiences/Services have no inventory yet — skip the fetch and show the
+    // coming-soon state instead of making a discarded request.
+    if (kind !== "stay") { setListings([]); setLoading(false); return; }
     let active = true;
     setLoading(true);
     fetchListings({ category, kind, ...search })
