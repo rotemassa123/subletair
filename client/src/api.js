@@ -39,13 +39,19 @@ export const me = () => fetch("/api/auth/me", { headers: authHeaders() }).then(j
 
 // Catalog
 export const fetchCategories = () => fetch("/api/categories").then(json);
-export function fetchListings({ category = "all", q = "" } = {}) {
+export function fetchListings({ category = "all", q = "", location = "", checkIn = "", checkOut = "", guests = 0, kind = "stay" } = {}) {
   const params = new URLSearchParams();
   if (category && category !== "all") params.set("category", category);
   if (q) params.set("q", q);
+  if (location) params.set("location", location);
+  if (checkIn) params.set("checkIn", checkIn);
+  if (checkOut) params.set("checkOut", checkOut);
+  if (guests) params.set("guests", String(guests));
+  if (kind && kind !== "stay") params.set("kind", kind);
   const qs = params.toString();
   return fetch(`/api/listings${qs ? `?${qs}` : ""}`, { headers: authHeaders() }).then(json);
 }
+export const fetchDestinations = () => fetch("/api/destinations").then(json);
 export const fetchMyListings = () => fetch("/api/listings/mine", { headers: authHeaders() }).then(json);
 export const toggleSave = (id) => fetch(`/api/listings/${id}/save`, { method: "POST", headers: authHeaders() }).then(json);
 
