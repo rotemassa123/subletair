@@ -12,7 +12,7 @@ const EMPTY_GUESTS = { adults: 0, children: 0, infants: 0, pets: 0 };
  */
 export function SearchBar({ tab = "stays", onSearch, style }) {
   const [open, setOpen] = useState(null); // "where" | "dates" | "who" | null
-  const [where, setWhere] = useState("");
+  const [where, setWhere] = useState(""); // committed destination text (typed or chosen)
   const [dates, setDates] = useState({ checkIn: "", checkOut: "" });
   const [guests, setGuests] = useState(EMPTY_GUESTS);
   const ref = useRef(null);
@@ -42,7 +42,7 @@ export function SearchBar({ tab = "stays", onSearch, style }) {
   return (
     <div ref={ref} style={{ position: "relative", ...style }}>
       <form onSubmit={commit} className="sl-search" style={bar}>
-        <Segment label="Where" value={where || "Search destinations"} muted={!where} onClick={() => setOpen(open === "where" ? null : "where")} active={open === "where"} where />
+        <WhereSegment value={where} onChange={setWhere} active={open === "where"} onFocus={() => setOpen("where")} />
         <Divider />
         {single ? (
           <Segment label="Date" value={datesLabel} muted={!dates.checkIn} onClick={() => setOpen(open === "dates" ? null : "dates")} active={open === "dates"} />
@@ -62,7 +62,7 @@ export function SearchBar({ tab = "stays", onSearch, style }) {
 
       {open === "where" && (
         <div className="sl-flyout" style={{ left: 0 }}>
-          <WhereFlyout value={where} onSelect={(d) => { setWhere(d); setOpen(single ? "dates" : "dates"); }} />
+          <WhereFlyout value={where} onSelect={(d) => { setWhere(d); setOpen("dates"); }} />
         </div>
       )}
       {open === "dates" && (
@@ -79,12 +79,33 @@ export function SearchBar({ tab = "stays", onSearch, style }) {
   );
 }
 
-function Segment({ label, value, muted, onClick, active, where }) {
+function Segment({ label, value, muted, onClick, active }) {
   return (
     <button type="button" onClick={onClick} className="sl-search-seg" style={{ ...seg, background: active ? "var(--color-surface-soft)" : "transparent" }}>
       <span style={{ fontSize: "var(--type-caption-size)", fontWeight: 600, color: "var(--color-ink)" }}>{label}</span>
       <span style={{ fontSize: "var(--type-body-sm-size)", color: muted ? "var(--color-muted)" : "var(--color-ink)", whiteSpace: "nowrap", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis" }}>{value}</span>
     </button>
+  );
+}
+
+// The Where segment holds a real text input so the user can type to filter
+// destinations; the value also serves as the committed location on search.
+function WhereSegment({ value, onChange, active, onFocus }) {
+  return (
+    <label className="sl-search-seg sl-search-where" style={{ ...seg, cursor: "text", background: active ? "var(--color-surface-soft)" : "transparent" }}>
+      <span style={{ fontSize: "var(--type-caption-size)", fontWeight: 600, color: "var(--color-ink)" }}>Where</span>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={onFocus}
+        placeholder="Search destinations"
+        style={{
+          border: "none", outline: "none", background: "transparent",
+          fontSize: "var(--type-body-sm-size)", color: "var(--color-ink)",
+          fontFamily: "var(--font-family-base)", width: 150, padding: 0,
+        }}
+      />
+    </label>
   );
 }
 function Divider() { return <span style={{ width: 1, height: 30, background: "var(--color-hairline)" }} />; }
