@@ -1,0 +1,35 @@
+/* Subletair — Spacing, radii, elevation
+   4px base (with a 2px micro-step). Major bands at 64px; card grids compress
+   to 16px gutters — "open hero, dense marketplace below". */
+:root {
+  /* spacing scale */
+  --space-xxs: 2px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-base: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --space-section: 64px;
+
+  /* corner radii — nothing hard except the body grid */
+  --radius-none: 0px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;    /* buttons, inputs */
+  --radius-md: 14px;   /* property / experience cards */
+  --radius-lg: 20px;
+  --radius-xl: 32px;   /* category strip */
+  --radius-full: 9999px; /* search bar, orb, hearts, pills */
+
+  /* elevation — exactly one tier plus flat */
+  --shadow-card:
+    rgba(0, 0, 0, 0.02) 0 0 0 1px,
+    rgba(0, 0, 0, 0.04) 0 2px 6px 0,
+    rgba(0, 0, 0, 0.1) 0 4px 8px 0;
+
+  /* layout containers */
+  --container-editorial: 1280px;
+  --container-listing: 1080px;
+  --container-wide: 1440px;
+}

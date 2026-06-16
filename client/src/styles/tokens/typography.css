@@ -1,0 +1,116 @@
+/* Subletair — Typography scale
+   One family carries the entire scale. Display weights stay modest (500–700);
+   the system trusts photography for visual heft. The single loud moment is the
+   64px rating display on listing pages. */
+:root {
+  /* family */
+  --font-family-base: var(--font-sans);
+
+  /* rating-display — listing-detail "4.81"; the loudest type in the system */
+  --type-rating-display-size: 64px;
+  --type-rating-display-weight: 700;
+  --type-rating-display-line: 1.1;
+  --type-rating-display-tracking: -1px;
+
+  /* display-xl — homepage h1 */
+  --type-display-xl-size: 28px;
+  --type-display-xl-weight: 700;
+  --type-display-xl-line: 1.43;
+  --type-display-xl-tracking: 0;
+
+  /* display-lg — listing-detail h1 */
+  --type-display-lg-size: 22px;
+  --type-display-lg-weight: 500;
+  --type-display-lg-line: 1.18;
+  --type-display-lg-tracking: -0.44px;
+
+  /* display-md — section heads ("What this place offers") */
+  --type-display-md-size: 21px;
+  --type-display-md-weight: 700;
+  --type-display-md-line: 1.43;
+  --type-display-md-tracking: 0;
+
+  /* display-sm — sub-section titles ("Things to know") */
+  --type-display-sm-size: 20px;
+  --type-display-sm-weight: 600;
+  --type-display-sm-line: 1.2;
+  --type-display-sm-tracking: -0.18px;
+
+  /* title-md — city link block titles */
+  --type-title-md-size: 16px;
+  --type-title-md-weight: 600;
+  --type-title-md-line: 1.25;
+  --type-title-md-tracking: 0;
+
+  /* title-sm — footer column heads */
+  --type-title-sm-size: 16px;
+  --type-title-sm-weight: 500;
+  --type-title-sm-line: 1.25;
+  --type-title-sm-tracking: 0;
+
+  /* body-md — default running text */
+  --type-body-md-size: 16px;
+  --type-body-md-weight: 400;
+  --type-body-md-line: 1.5;
+  --type-body-md-tracking: 0;
+
+  /* body-sm — card meta, dates, prices */
+  --type-body-sm-size: 14px;
+  --type-body-sm-weight: 400;
+  --type-body-sm-line: 1.43;
+  --type-body-sm-tracking: 0;
+
+  /* caption — search field segment labels */
+  --type-caption-size: 14px;
+  --type-caption-weight: 500;
+  --type-caption-line: 1.29;
+  --type-caption-tracking: 0;
+
+  /* caption-sm — footer legal line */
+  --type-caption-sm-size: 13px;
+  --type-caption-sm-weight: 400;
+  --type-caption-sm-line: 1.23;
+  --type-caption-sm-tracking: 0;
+
+  /* badge — "Guest favorite" pill */
+  --type-badge-size: 11px;
+  --type-badge-weight: 600;
+  --type-badge-line: 1.18;
+  --type-badge-tracking: 0;
+
+  /* micro-label — card amenity micro labels */
+  --type-micro-label-size: 12px;
+  --type-micro-label-weight: 700;
+  --type-micro-label-line: 1.33;
+  --type-micro-label-tracking: 0;
+
+  /* uppercase-tag — "NEW" badge on product nav */
+  --type-uppercase-tag-size: 8px;
+  --type-uppercase-tag-weight: 700;
+  --type-uppercase-tag-line: 1.25;
+  --type-uppercase-tag-tracking: 0.32px;
+
+  /* button-md — primary CTA labels */
+  --type-button-md-size: 16px;
+  --type-button-md-weight: 500;
+  --type-button-md-line: 1.25;
+  --type-button-md-tracking: 0;
+
+  /* button-sm — pill / category labels */
+  --type-button-sm-size: 14px;
+  --type-button-sm-weight: 500;
+  --type-button-sm-line: 1.29;
+  --type-button-sm-tracking: 0;
+
+  /* link — inline body links */
+  --type-link-size: 14px;
+  --type-link-weight: 400;
+  --type-link-line: 1.43;
+  --type-link-tracking: 0;
+
+  /* nav-link — top product-nav labels */
+  --type-nav-link-size: 16px;
+  --type-nav-link-weight: 600;
+  --type-nav-link-line: 1.25;
+  --type-nav-link-tracking: 0;
+}
