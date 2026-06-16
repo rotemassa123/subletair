@@ -15,7 +15,10 @@ export function TopNav({
   ],
   active = "stays",
   onSelect,
-  userName,
+  user,
+  onLogin,
+  onLogout,
+  onHostingClick,
   style,
   ...rest
 }) {
@@ -78,16 +81,29 @@ export function TopNav({
       </nav>
 
       <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "0 0 auto" }}>
-        <button type="button" style={textPill}>Become a host</button>
-        <button type="button" aria-label="Language" style={iconDisc}><GlobeGlyph /></button>
-        <button type="button" style={accountPill}>
-          <MenuGlyph />
-          <span style={{
-            width: 30, height: 30, borderRadius: "var(--radius-full)",
-            background: "var(--color-muted)", color: "#fff", display: "inline-flex",
-            alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 600,
-          }}>{userName ? userName.charAt(0).toUpperCase() : ""}{!userName && <PersonGlyph />}</span>
+        <button type="button" style={textPill} onClick={onHostingClick}>
+          {user ? "Switch to hosting" : "Become a host"}
         </button>
+        <button type="button" aria-label="Language" style={iconDisc}><GlobeGlyph /></button>
+        {user ? (
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+            <span style={{
+              width: 32, height: 32, borderRadius: "var(--radius-full)",
+              background: "var(--color-primary)", color: "#fff", display: "inline-flex",
+              alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 600,
+            }}>{user.name.charAt(0).toUpperCase()}</span>
+            <button type="button" style={textPill} onClick={onLogout}>Log out</button>
+          </div>
+        ) : (
+          <button type="button" style={accountPill} onClick={onLogin}>
+            <MenuGlyph />
+            <span style={{
+              width: 30, height: 30, borderRadius: "var(--radius-full)",
+              background: "var(--color-muted)", color: "#fff", display: "inline-flex",
+              alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 600,
+            }}><PersonGlyph /></span>
+          </button>
+        )}
       </div>
     </header>
   );
