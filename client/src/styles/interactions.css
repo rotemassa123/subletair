@@ -215,3 +215,15 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------- Guest steppers ---------- */
+.sl-stepper-btn { transition: border-color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard); }
+.sl-stepper-btn:hover:not(:disabled) { border-color: var(--color-ink); }
+
+/* ---------- Search flyout popover ---------- */
+.sl-flyout {
+  position: absolute; top: calc(100% + 12px); z-index: 60;
+  background: var(--color-canvas); border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card); border: 1px solid var(--color-hairline-soft);
+  animation: sl-fade-up 200ms var(--ease-out-quart) both;
+}
