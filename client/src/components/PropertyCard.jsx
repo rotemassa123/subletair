@@ -1,6 +1,7 @@
 import React from "react";
 import { Badge } from "./Badge.jsx";
 import { IconButton } from "./IconButton.jsx";
+import { useCurrency } from "../currency/CurrencyContext.jsx";
 
 /**
  * Photo-first listing card. Square (1:1) photo clipped to the card radius, a
@@ -22,6 +23,7 @@ export function PropertyCard({
   style,
   ...rest
 }) {
+  const { format } = useCurrency();
   return (
     <div
       className={className ? `sl-card ${className}` : "sl-card"}
@@ -86,7 +88,7 @@ export function PropertyCard({
         )}
         {price != null && (
           <span style={{ fontSize: "var(--type-body-sm-size)", marginTop: 4 }}>
-            <strong style={{ fontWeight: 600 }}>${price}</strong> {priceUnit}
+            <strong style={{ fontWeight: 600 }}>{format(price)}</strong> {priceUnit}
           </span>
         )}
       </div>
