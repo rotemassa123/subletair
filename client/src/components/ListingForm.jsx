@@ -11,6 +11,10 @@ export function ListingForm({ categories, initial = null, onSubmit, onCancel }) 
   const [cat, setCat] = useState(initial?.cat || (categories.find((c) => c.key !== "all")?.key ?? ""));
   const [rating, setRating] = useState(initial?.rating || "");
   const [badge, setBadge] = useState(initial?.badge || "");
+  const [location, setLocation] = useState(initial?.location || "");
+  const [guests, setGuests] = useState(initial?.guests || 2);
+  const [availStart, setAvailStart] = useState(initial?.availability?.start || "");
+  const [availEnd, setAvailEnd] = useState(initial?.availability?.end || "");
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -24,6 +28,10 @@ export function ListingForm({ categories, initial = null, onSubmit, onCancel }) 
       fd.set("subtitle", subtitle);
       fd.set("price", String(price));
       fd.set("cat", cat);
+      fd.set("location", location);
+      fd.set("guests", String(guests));
+      if (availStart) fd.set("availStart", availStart);
+      if (availEnd) fd.set("availEnd", availEnd);
       if (rating) fd.set("rating", String(rating));
       if (badge) fd.set("badge", badge);
       if (file) fd.set("photo", file);
@@ -45,6 +53,16 @@ export function ListingForm({ categories, initial = null, onSubmit, onCancel }) 
       <select className="sl-field" style={field} value={cat} onChange={(e) => setCat(e.target.value)}>
         {selectableCats.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
       </select>
+      <input className="sl-field" style={field} placeholder="Location (e.g. Lisbon)" value={location} onChange={(e) => setLocation(e.target.value)} required />
+      <input className="sl-field" style={field} type="number" min="1" max="16" placeholder="Max guests" value={guests} onChange={(e) => setGuests(e.target.value)} required />
+      <div style={{ display: "flex", gap: 8 }}>
+        <label style={{ flex: 1, fontSize: 13, color: "var(--color-muted)" }}>Available from
+          <input className="sl-field" style={{ ...field, width: "100%" }} type="date" value={availStart} onChange={(e) => setAvailStart(e.target.value)} />
+        </label>
+        <label style={{ flex: 1, fontSize: 13, color: "var(--color-muted)" }}>Available to
+          <input className="sl-field" style={{ ...field, width: "100%" }} type="date" value={availEnd} onChange={(e) => setAvailEnd(e.target.value)} />
+        </label>
+      </div>
       <input className="sl-field" style={field} type="number" step="0.01" min="0" max="5" placeholder="Rating (optional, 0–5)" value={rating} onChange={(e) => setRating(e.target.value)} />
       <select className="sl-field" style={field} value={badge} onChange={(e) => setBadge(e.target.value)}>
         <option value="">No badge</option>
