@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-function ymd(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
 function addMonths(base, n) { return new Date(base.getFullYear(), base.getMonth() + n, 1); }
 
 /** Range calendar. `value` is { checkIn, checkOut } (ISO strings). `single` picks one date. */
@@ -23,7 +22,7 @@ export function DateRangeFlyout({ value, onChange, single = false }) {
         <button type="button" aria-label="Previous month" onClick={() => setView(addMonths(view, -1))} style={navBtn}>‹</button>
         <button type="button" aria-label="Next month" onClick={() => setView(addMonths(view, 1))} style={navBtn}>›</button>
       </div>
-      <div style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 24, flexWrap: "nowrap" }}>
         {months.map((m, i) => (
           <Month key={i} month={m} value={value} onPick={pick} single={single} />
         ))}
