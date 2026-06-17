@@ -99,8 +99,77 @@ const DESTINATIONS = [
   },
 ];
 
+// Larger set of destinations Israelis commonly book — Israel plus popular getaways.
+// Listings are generated from per-category title pools so each row fills out.
+const TITLE_POOLS = {
+  city: [
+    "Bright apartment in the center", "Sunlit flat with a balcony", "Modern studio downtown",
+    "Boho loft near the market", "Quiet flat off the boulevard", "Renovated apartment with terrace",
+    "Cozy studio near the old town", "Designer flat with city views", "Charming walk-up apartment",
+    "Penthouse with a rooftop", "Garden-level one-bedroom", "Stylish pied-à-terre",
+  ],
+  beach: [
+    "Seafront apartment with balcony", "Bright beach studio", "Steps-to-sand bungalow",
+    "Blue-and-white beach house", "Sunset-view sea apartment", "Coastal villa with a pool",
+    "Marina-side flat", "Whitewashed seaside studio", "Surfside cabin", "Palm-shaded beach cottage",
+    "Cliffside apartment, sea view", "Breezy beachfront loft",
+  ],
+  design: [
+    "Minimalist desert retreat", "Architect-designed villa", "Cave-style suite with a view",
+    "Concrete-and-glass house", "Cycladic cave house", "Infinity-view design villa",
+    "Stone suite with plunge pool", "Sculptural desert home", "Sunset caldera suite",
+    "Modernist hillside house", "Earth-toned design loft", "Light-filled architectural flat",
+  ],
+  lake: [
+    "Lakefront cottage with deck", "Galilee-view apartment", "Quiet lakeside studio",
+    "Waterfront cabin", "Lake-view villa with garden", "Boathouse-style retreat",
+    "Shoreline bungalow", "Calm lakeside flat",
+  ],
+};
+const SUBS = [
+  "Jun 12–16", "Jun 24–28", "Jul 3–8", "Jul 15–20", "Aug 1–6", "Aug 18–23",
+  "Sep 5–10", "Sep 22–27", "Oct 8–13", "Nov 2–7",
+];
+const BASE_PRICE = { city: 120, beach: 165, design: 205, lake: 140 };
+
+// { location, cat, n } — Israel, Greece, and other Israeli-favorite spots.
+const GENERATED = [
+  { location: "Tel Aviv", cat: "city", n: 10 },
+  { location: "Jerusalem", cat: "city", n: 8 },
+  { location: "Haifa", cat: "city", n: 8 },
+  { location: "Eilat", cat: "beach", n: 10 },
+  { location: "Tiberias", cat: "lake", n: 8 },
+  { location: "Dead Sea", cat: "design", n: 6 },
+  { location: "Mitzpe Ramon", cat: "design", n: 6 },
+  { location: "Athens", cat: "city", n: 8 },
+  { location: "Santorini", cat: "design", n: 10 },
+  { location: "Crete", cat: "beach", n: 8 },
+  { location: "Rhodes", cat: "beach", n: 7 },
+  { location: "Mykonos", cat: "beach", n: 6 },
+  { location: "Thessaloniki", cat: "city", n: 5 },
+  { location: "Larnaca", cat: "beach", n: 5 },
+  { location: "Batumi", cat: "city", n: 5 },
+];
+
+function genHomes(dest) {
+  const pool = TITLE_POOLS[dest.cat];
+  return Array.from({ length: dest.n }, (_, i) => ({
+    title: pool[i % pool.length],
+    sub: SUBS[(i + dest.location.length) % SUBS.length],
+    price: BASE_PRICE[dest.cat] + ((i * 37) % 95),
+    rating: Math.round((4.72 + ((i * 13) % 26) / 100) * 100) / 100,
+    guests: 2 + ((i * 3) % 6),
+    badge: i % 4 === 0 ? "Guest favorite" : i % 7 === 0 ? "New" : null,
+  }));
+}
+
+const ALL_DESTINATIONS = [
+  ...DESTINATIONS,
+  ...GENERATED.map((d) => ({ location: d.location, cat: d.cat, homes: genHomes(d) })),
+];
+
 let nextId = 1;
-export const listings = DESTINATIONS.flatMap((d) =>
+export const listings = ALL_DESTINATIONS.flatMap((d) =>
   d.homes.map((h, i) => ({
     id: nextId++,
     title: h.title,
