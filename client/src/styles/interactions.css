@@ -225,7 +225,9 @@
   position: absolute; top: calc(100% + 12px); z-index: 60;
   background: var(--color-canvas); border-radius: var(--radius-xl);
   box-shadow: var(--shadow-card); border: 1px solid var(--color-hairline-soft);
-  animation: sl-fade-up 200ms var(--ease-out-quart) both;
+  /* fade only — must not animate `transform`, or fill-mode:both overrides the
+     inline translateX(-50%) that centers the date flyout. */
+  animation: sl-fade-in 200ms var(--ease-out-quart) both;
 }
 
 /* ---------- Dropdown menu ---------- */

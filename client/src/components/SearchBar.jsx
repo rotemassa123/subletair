@@ -44,15 +44,13 @@ export function SearchBar({ tab = "stays", onSearch, style }) {
       <form onSubmit={commit} className="sl-search" style={bar}>
         <WhereSegment value={where} onChange={setWhere} active={open === "where"} onFocus={() => setOpen("where")} />
         <Divider />
-        {single ? (
-          <Segment label="Date" value={datesLabel} muted={!dates.checkIn} onClick={() => setOpen(open === "dates" ? null : "dates")} active={open === "dates"} />
-        ) : (
-          <>
-            <Segment label="Check in" value={dates.checkIn ? fmt(dates.checkIn) : "Add dates"} muted={!dates.checkIn} onClick={() => setOpen(open === "dates" ? null : "dates")} active={open === "dates"} />
-            <Divider />
-            <Segment label="Check out" value={dates.checkOut ? fmt(dates.checkOut) : "Add dates"} muted={!dates.checkOut} onClick={() => setOpen(open === "dates" ? null : "dates")} active={open === "dates"} />
-          </>
-        )}
+        <Segment
+          label={single ? "Date" : "When"}
+          value={datesLabel}
+          muted={!dates.checkIn}
+          onClick={() => setOpen(open === "dates" ? null : "dates")}
+          active={open === "dates"}
+        />
         <Divider />
         <Segment label="Who" value={guestLabel} muted={!guestCount} onClick={() => setOpen(open === "who" ? null : "who")} active={open === "who"} />
         <button type="submit" aria-label="Search" className="sl-search-orb" style={orb}>
