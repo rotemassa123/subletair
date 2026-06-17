@@ -23,6 +23,7 @@ export function CategoryStrip({ categories, active = "all", onSelect }) {
             key={c.key}
             type="button"
             onClick={() => onSelect && onSelect(c.key)}
+            className={isActive ? "sl-chip is-active" : "sl-chip"}
             style={{
               display: "flex",
               flexDirection: "column",
@@ -33,18 +34,13 @@ export function CategoryStrip({ categories, active = "all", onSelect }) {
               background: "transparent",
               cursor: "pointer",
               whiteSpace: "nowrap",
-              color: isActive ? "var(--color-ink)" : "var(--color-muted)",
             }}
           >
-            <span
-              style={{
-                fontSize: "var(--type-button-sm-size)",
-                fontWeight: 500,
-              }}
-            >
+            <span className="sl-chip__label" style={{ fontSize: "var(--type-body-sm-size)" }}>
               {c.label}
             </span>
             <span
+              className="sl-chip__rule"
               style={{
                 height: 2,
                 width: "100%",

@@ -105,3 +105,45 @@ test("listings/mine returns only my listings", async () => {
   assert.ok(mine.length >= 1);
   assert.ok(mine.every((l) => l.title === "Only mine"));
 });
+
+test("GET /api/listings filters by guests, location, dates, kind", async () => {
+  const all = await (await fetch(base + "/api/listings")).json();
+  assert.ok(all.length > 0);
+  const big = await (await fetch(base + "/api/listings?guests=6")).json();
+  assert.ok(big.every((l) => l.guests >= 6));
+  const tahoe = await (await fetch(base + "/api/listings?location=Tahoe")).json();
+  assert.ok(tahoe.every((l) => /tahoe/i.test(l.location)));
+  const july = await (await fetch(base + "/api/listings?checkIn=2026-07-04&checkOut=2026-07-08")).json();
+  assert.ok(july.some((l) => l.title === "Pine cabin near the trailhead"));
+  const exp = await (await fetch(base + "/api/listings?kind=experience")).json();
+  assert.equal(exp.length, 0);
+});
+
+test("GET /api/destinations returns location strings", async () => {
+  const dests = await (await fetch(base + "/api/destinations")).json();
+  assert.ok(Array.isArray(dests) && dests.includes("Lisbon"));
+});
+
+test("host create accepts location/guests/availability and they round-trip", async () => {
+  const token = await register("host-av@test.com");
+  const fd = new FormData();
+  fd.set("title", "Berlin loft"); fd.set("price", "120"); fd.set("cat", "loft");
+  fd.set("location", "Berlin"); fd.set("guests", "4");
+  fd.set("availStart", "2026-05-01"); fd.set("availEnd", "2026-05-20");
+  const made = await (await fetch(base + "/api/listings", { method: "POST", headers: { authorization: `Bearer ${token}` }, body: fd })).json();
+  assert.equal(made.location, "Berlin");
+  assert.equal(made.guests, 4);
+  assert.deepEqual(made.availability, { start: "2026-05-01", end: "2026-05-20" });
+  // and it is findable by a Berlin May search for 4 guests
+  const hit = await (await fetch(base + "/api/listings?location=Berlin&guests=4&checkIn=2026-05-02&checkOut=2026-05-05")).json();
+  assert.ok(hit.some((l) => l.id === made.id));
+});
+
+test("host create rejects bad guests / availability", async () => {
+  const token = await register("host-bad@test.com");
+  const mk = (mut) => { const fd = new FormData(); fd.set("title","X"); fd.set("price","99"); fd.set("cat","loft"); fd.set("location","X"); fd.set("guests","2"); mut(fd); return fd; };
+  const badGuests = await fetch(base + "/api/listings", { method: "POST", headers: { authorization: `Bearer ${token}` }, body: mk((fd)=>fd.set("guests","0")) });
+  assert.equal(badGuests.status, 400);
+  const badRange = await fetch(base + "/api/listings", { method: "POST", headers: { authorization: `Bearer ${token}` }, body: mk((fd)=>{fd.set("availStart","2026-05-10"); fd.set("availEnd","2026-05-01");}) });
+  assert.equal(badRange.status, 400);
+});

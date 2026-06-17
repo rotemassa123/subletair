@@ -6,7 +6,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import bcrypt from "bcryptjs";
-import { categories, listings, demoHost } from "./seed.js";
+import { categories, listings, demoHost, demoAvailability } from "./seed.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = process.env.SUBLETAIR_DB || path.resolve(__dirname, "../data/subletair.db");
@@ -56,7 +56,42 @@ db.exec(`
   );
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS availability (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    listing_id INTEGER NOT NULL,
+    start_date TEXT NOT NULL,
+    end_date   TEXT NOT NULL,
+    FOREIGN KEY (listing_id) REFERENCES listings(id) ON DELETE CASCADE
+  );
+`);
+
+// Add columns to a pre-existing listings table if they're missing.
+const listingCols = db.prepare("PRAGMA table_info(listings)").all().map((c) => c.name);
+if (!listingCols.includes("location")) db.exec("ALTER TABLE listings ADD COLUMN location TEXT NOT NULL DEFAULT ''");
+if (!listingCols.includes("guests")) db.exec("ALTER TABLE listings ADD COLUMN guests INTEGER NOT NULL DEFAULT 2");
+if (!listingCols.includes("kind")) db.exec("ALTER TABLE listings ADD COLUMN kind TEXT NOT NULL DEFAULT 'stay'");
+
 seedIfEmpty();
+backfillExisting();
+
+// Upgrade path: a DB seeded before this feature has listings with empty location
+// and no availability rows (invisible to location/date filters). Backfill the
+// known seed values and give every listing at least one availability window.
+function backfillExisting() {
+  const setMeta = db.prepare(
+    "UPDATE listings SET location=@location, guests=@guests WHERE id=@id AND (location='' OR location IS NULL)"
+  );
+  for (const l of listings) setMeta.run({ id: l.id, location: l.location, guests: l.guests });
+
+  const missing = db
+    .prepare("SELECT id FROM listings WHERE id NOT IN (SELECT listing_id FROM availability)")
+    .all();
+  for (const { id } of missing) {
+    const win = demoAvailability[id] || demoAvailability.default;
+    setAvailability(id, win.start, win.end);
+  }
+}
 
 function seedIfEmpty() {
   const count = db.prepare("SELECT COUNT(*) AS n FROM listings").get().n;
@@ -75,10 +110,14 @@ function seedIfEmpty() {
   }
 
   const insertListing = db.prepare(`
-    INSERT INTO listings (id,title,subtitle,price,rating,badge,image,cat,owner_id)
-    VALUES (@id,@title,@subtitle,@price,@rating,@badge,@image,@cat,@owner_id)
+    INSERT INTO listings (id,title,subtitle,price,rating,badge,image,cat,owner_id,location,guests,kind)
+    VALUES (@id,@title,@subtitle,@price,@rating,@badge,@image,@cat,@owner_id,@location,@guests,'stay')
   `);
-  for (const l of listings) insertListing.run({ ...l, owner_id: host.id });
+  for (const l of listings) {
+    insertListing.run({ ...l, owner_id: host.id });
+    const win = demoAvailability[l.id] || demoAvailability.default;
+    setAvailability(l.id, win.start, win.end);
+  }
 }
 
 // --- Users -------------------------------------------------------------------
@@ -109,13 +148,26 @@ export function categoryExists(key) {
   return !!db.prepare("SELECT 1 FROM categories WHERE key = ?").get(key);
 }
 
-export function getListings({ category = "all", q = "", user = null, ownerId = null } = {}) {
-  const clauses = [];
-  const params = {};
+export function getListings({
+  category = "all", q = "", location = "", checkIn = "", checkOut = "",
+  guests = 0, kind = "stay", user = null, ownerId = null,
+} = {}) {
+  const clauses = ["kind = @kind"];
+  const params = { kind: kind || "stay" };
   if (category && category !== "all") { clauses.push("cat = @category"); params.category = category; }
-  if (q && q.trim()) { clauses.push("(title LIKE @q OR subtitle LIKE @q)"); params.q = `%${q.trim()}%`; }
+  const term = location || q;
+  if (term && term.trim()) {
+    clauses.push("(location LIKE @term OR title LIKE @term OR subtitle LIKE @term)");
+    params.term = `%${term.trim()}%`;
+  }
+  if (guests && Number(guests) > 0) { clauses.push("guests >= @guests"); params.guests = Number(guests); }
   if (ownerId != null) { clauses.push("owner_id = @ownerId"); params.ownerId = ownerId; }
-  const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : "";
+  if (checkIn && checkOut) {
+    clauses.push(`EXISTS (SELECT 1 FROM availability a
+      WHERE a.listing_id = listings.id AND a.start_date <= @checkIn AND a.end_date >= @checkOut)`);
+    params.checkIn = checkIn; params.checkOut = checkOut;
+  }
+  const where = `WHERE ${clauses.join(" AND ")}`;
   const rows = db.prepare(`SELECT * FROM listings ${where} ORDER BY created_at DESC, id DESC`).all(params);
   return rows.map((r) => toListing(r, user));
 }
@@ -125,16 +177,31 @@ export function getListing(id, user = null) {
   return row ? toListing(row, user) : null;
 }
 
+export function getDestinations() {
+  return db.prepare("SELECT DISTINCT location FROM listings WHERE location <> '' ORDER BY location").all().map((r) => r.location);
+}
+
+export function setAvailability(listingId, start, end) {
+  if (!start || !end) return;
+  db.prepare("DELETE FROM availability WHERE listing_id = ?").run(listingId);
+  db.prepare("INSERT INTO availability (listing_id,start_date,end_date) VALUES (?,?,?)").run(listingId, start, end);
+}
+
+export function getAvailability(listingId) {
+  const r = db.prepare("SELECT start_date, end_date FROM availability WHERE listing_id = ? ORDER BY start_date LIMIT 1").get(listingId);
+  return r ? { start: r.start_date, end: r.end_date } : null;
+}
+
 export function createListing(data) {
   const info = db.prepare(`
-    INSERT INTO listings (title,subtitle,price,rating,badge,image,cat,owner_id)
-    VALUES (@title,@subtitle,@price,@rating,@badge,@image,@cat,@owner_id)
-  `).run(data);
+    INSERT INTO listings (title,subtitle,price,rating,badge,image,cat,owner_id,location,guests,kind)
+    VALUES (@title,@subtitle,@price,@rating,@badge,@image,@cat,@owner_id,@location,@guests,@kind)
+  `).run({ kind: "stay", location: "", guests: 2, ...data });
   return getListing(info.lastInsertRowid);
 }
 
 export function updateListing(id, fields) {
-  const allowed = ["title", "subtitle", "price", "rating", "badge", "image", "cat"];
+  const allowed = ["title", "subtitle", "price", "rating", "badge", "image", "cat", "location", "guests"];
   const sets = allowed.filter((k) => k in fields).map((k) => `${k} = @${k}`);
   if (!sets.length) return getListing(id);
   db.prepare(`UPDATE listings SET ${sets.join(", ")} WHERE id = @id`).run({ ...fields, id });
@@ -160,7 +227,7 @@ function toListing(row, user) {
   if (user) {
     saved = !!db.prepare("SELECT 1 FROM saved_listings WHERE user_id=? AND listing_id=?").get(user.id, row.id);
   }
-  return { ...row, saved };
+  return { ...row, saved, availability: getAvailability(row.id) };
 }
 
 export default db;

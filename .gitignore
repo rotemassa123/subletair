@@ -11,3 +11,10 @@ server/uploads/*
 # local QA artifacts (not part of the app)
 qa-baseline-*.png
 docs/qa/
+
+# impeccable tool state + preview screenshots
+.impeccable/
+*-desktop*.png
+*-mobile*.png
+animation-layer-*.png
+where-*.png

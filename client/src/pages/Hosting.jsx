@@ -42,10 +42,10 @@ export function Hosting({ onRequireAuth }) {
   if (!user) return <Centered>Please log in to manage your listings.</Centered>;
 
   return (
-    <main style={{ maxWidth: "var(--container-editorial)", margin: "0 auto", padding: "32px 40px 64px" }}>
+    <main className="sl-gutter" style={{ maxWidth: "var(--container-editorial)", margin: "0 auto", paddingTop: 32, paddingBottom: 64 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <h1 style={{ fontSize: "var(--type-display-xl-size)", fontWeight: 700, margin: 0 }}>Your listings</h1>
-        {!editing && <button onClick={() => setEditing("new")} style={primaryBtn}>Create listing</button>}
+        {!editing && <button onClick={() => setEditing("new")} className="sl-btn-primary" style={primaryBtn}>Create listing</button>}
       </div>
 
       {editing === "new" && (
@@ -65,12 +65,12 @@ export function Hosting({ onRequireAuth }) {
         <p style={{ color: "var(--color-muted)" }}>You haven’t published any listings yet.</p>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
-          {mine.map((l) => (
-            <div key={l.id}>
+          {mine.map((l, i) => (
+            <div key={l.id} className="sl-reveal" style={{ animationDelay: `${Math.min(i, 11) * 45}ms` }}>
               <PropertyCard image={l.image} title={l.title} subtitle={l.subtitle} price={l.price} rating={l.rating} badge={l.badge} />
               <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                <button onClick={() => setEditing(l)} style={smallBtn}>Edit</button>
-                <button onClick={() => handleDelete(l.id)} style={{ ...smallBtn, color: "var(--color-error-text)" }}>Delete</button>
+                <button onClick={() => setEditing(l)} className="sl-btn-outline" style={smallBtn}>Edit</button>
+                <button onClick={() => handleDelete(l.id)} className="sl-btn-outline" style={{ ...smallBtn, color: "var(--color-error-text)" }}>Delete</button>
               </div>
             </div>
           ))}
@@ -94,9 +94,9 @@ function Centered({ children }) {
 
 const primaryBtn = {
   height: 48, padding: "0 24px", borderRadius: "var(--radius-sm)", border: "none", cursor: "pointer",
-  background: "var(--color-primary)", color: "var(--color-on-primary)", fontSize: 16, fontWeight: 500, fontFamily: "var(--font-family-base)",
+  fontSize: 16, fontWeight: 500, fontFamily: "var(--font-family-base)",
 };
 const smallBtn = {
   flex: 1, height: 36, borderRadius: "var(--radius-sm)", border: "1px solid var(--color-hairline)", cursor: "pointer",
-  background: "var(--color-canvas)", color: "var(--color-ink)", fontSize: 14, fontWeight: 500, fontFamily: "var(--font-family-base)",
+  color: "var(--color-ink)", fontSize: 14, fontWeight: 500, fontFamily: "var(--font-family-base)",
 };

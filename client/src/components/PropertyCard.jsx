@@ -1,6 +1,7 @@
 import React from "react";
 import { Badge } from "./Badge.jsx";
 import { IconButton } from "./IconButton.jsx";
+import { useCurrency } from "../currency/CurrencyContext.jsx";
 
 /**
  * Photo-first listing card. Square (1:1) photo clipped to the card radius, a
@@ -18,11 +19,14 @@ export function PropertyCard({
   saved = false,
   onToggleSave,
   aspect = "1 / 1",
+  className,
   style,
   ...rest
 }) {
+  const { format } = useCurrency();
   return (
     <div
+      className={className ? `sl-card ${className}` : "sl-card"}
       style={{
         fontFamily: "var(--font-family-base)",
         color: "var(--color-ink)",
@@ -32,6 +36,7 @@ export function PropertyCard({
       {...rest}
     >
       <div
+        className="sl-card__photo"
         style={{
           position: "relative",
           aspectRatio: aspect,
@@ -60,6 +65,7 @@ export function PropertyCard({
             active={saved}
             size={32}
             onClick={onToggleSave}
+            className={saved ? "sl-heart is-saved" : "sl-heart"}
           >
             <HeartGlyph filled={saved} />
           </IconButton>
@@ -82,7 +88,7 @@ export function PropertyCard({
         )}
         {price != null && (
           <span style={{ fontSize: "var(--type-body-sm-size)", marginTop: 4 }}>
-            <strong style={{ fontWeight: 600 }}>${price}</strong> {priceUnit}
+            <strong style={{ fontWeight: 600 }}>{format(price)}</strong> {priceUnit}
           </span>
         )}
       </div>

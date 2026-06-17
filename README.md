@@ -19,10 +19,23 @@ photo-first property-card grid — backed by a REST API over file-based SQLite.
 ## Features
 
 - **Auth** — register / log in / log out (email + password, JWT in `localStorage`).
+- **Search** — Airbnb-style Where / When / Who pill: a destination autocomplete
+  (typeable, backed by real listing locations), a dual-month date-range calendar,
+  and adults/children/infants/pets steppers. Results filter by destination,
+  availability date range, and guest capacity.
+- **Product tabs** — Stays / Experiences / Services. Stays is the live marketplace;
+  switching reshapes the search bar and Experiences/Services show a "coming soon"
+  state (no inventory yet).
+- **Account menu** — auth-aware dropdown (logged out: Log in / Sign up / Help /
+  Become a host; logged in: Wishlists, Trips, hosting, settings, Log out).
+- **Language & currency** — globe modal; switching currency live-converts every
+  displayed price. Language is a persisted preference (sets `<html lang>`); full
+  copy translation is not yet wired.
 - **Guest** — browse, filter by category, search, and save listings to a per-user
   wishlist (saving requires login).
 - **Host** — a `/hosting` dashboard to create, edit, and delete your own listings,
-  including a photo upload. Host-created listings appear in the public marketplace.
+  with photo upload plus location, guest capacity, and an availability date range.
+  Host-created listings appear (and become searchable) in the public marketplace.
 
 ## Layout
 
@@ -75,13 +88,23 @@ npm --prefix server test   # node:test integration suite (auth, CRUD, uploads, w
 | POST   | `/api/auth/login`         | —            | Log in → `{ token, user }`                     |
 | GET    | `/api/auth/me`            | required     | Current user                                   |
 | GET    | `/api/categories`         | —            | Category strip entries                         |
-| GET    | `/api/listings`           | optional     | Listings; `?category=<key>&q=<text>`; per-user `saved` |
+| GET    | `/api/destinations`       | —            | Distinct listing locations (autocomplete)      |
+| GET    | `/api/listings`           | optional     | Listings + filters (below); per-user `saved`   |
 | GET    | `/api/listings/mine`      | required     | The current user's own listings                |
 | GET    | `/api/listings/:id`       | optional     | A single listing                               |
 | POST   | `/api/listings`           | required     | Create (multipart; `photo` file field)         |
 | PATCH  | `/api/listings/:id`       | required (owner) | Edit own listing                           |
 | DELETE | `/api/listings/:id`       | required (owner) | Delete own listing                         |
 | POST   | `/api/listings/:id/save`  | required     | Toggle the wishlist (heart) for the current user |
+
+`GET /api/listings` filters (all optional, AND-combined): `category`, `q`,
+`location`, `checkIn` / `checkOut` (ISO `YYYY-MM-DD`; a listing matches when one of
+its availability ranges covers the stay), `guests` (capacity ≥ N), and `kind`
+(`stay` default; `experience` / `service` return empty).
+
+Host create/edit (`POST` / `PATCH /api/listings`) accept, alongside the listing
+fields and `photo`: `location`, `guests`, and an availability range
+`availStart` / `availEnd`.
 
 Uploaded photos are served from `/uploads/<file>`.
 

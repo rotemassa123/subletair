@@ -1,33 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { SearchBar } from "../components/SearchBar.jsx";
 import { CategoryStrip } from "../components/CategoryStrip.jsx";
-import { PropertyCard } from "../components/PropertyCard.jsx";
+import { DestinationRow } from "../components/DestinationRow.jsx";
 import { fetchCategories, fetchListings, toggleSave } from "../api.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 
-export function Marketplace({ onRequireAuth }) {
+export function Marketplace({ search, onRequireAuth }) {
   const { user } = useAuth();
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState("all");
-  const [queryInput, setQueryInput] = useState("");
-  const [query, setQuery] = useState("");
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchCategories().then(setCategories).catch(() => setCategories([]));
-  }, []);
+  useEffect(() => { fetchCategories().then(setCategories).catch(() => setCategories([])); }, []);
 
   useEffect(() => {
     let active = true;
     setLoading(true);
-    fetchListings({ category, q: query })
+    fetchListings({ category, ...search })
       .then((rows) => { if (active) { setListings(rows); setError(null); } })
       .catch(() => active && setError("Couldn't load listings."))
       .finally(() => active && setLoading(false));
     return () => { active = false; };
-  }, [category, query, user]);
+  }, [category, search, user]);
 
   async function handleToggleSave(id) {
     if (!user) return onRequireAuth();
@@ -40,35 +35,57 @@ export function Marketplace({ onRequireAuth }) {
     }
   }
 
+  // Group listings into one row per destination, in order of first appearance.
+  const groups = [];
+  const byLocation = new Map();
+  for (const l of listings) {
+    const key = l.location || "Other";
+    if (!byLocation.has(key)) { byLocation.set(key, []); groups.push(key); }
+    byLocation.get(key).push(l);
+  }
+
+  const heading = search.location ? `Stays in ${search.location}` : "Inspiration for your next trip";
+
   return (
-    <>
-      <div style={{ display: "flex", justifyContent: "center", padding: "20px 40px 24px", borderBottom: "1px solid var(--color-hairline-soft)" }}>
-        <SearchBar query={queryInput} onQueryChange={setQueryInput} onSearch={() => setQuery(queryInput)} />
+    <main className="sl-gutter" style={{ maxWidth: "none", paddingBottom: 64 }}>
+      {categories.length > 0 && (
+        <CategoryStrip categories={categories} active={category} onSelect={setCategory} />
+      )}
+
+      <h1 className="sl-hero-in" style={{ fontSize: "var(--type-display-xl-size)", fontWeight: "var(--type-display-xl-weight)", lineHeight: "var(--type-display-xl-line)", margin: "24px 0", color: "var(--color-ink)" }}>
+        {heading}
+      </h1>
+
+      {error && <p style={{ color: "var(--color-error-text)" }}>{error}</p>}
+      {!error && !loading && listings.length === 0 && (
+        <p style={{ color: "var(--color-muted)" }}>No stays match your search. Try different dates, fewer guests, or another destination.</p>
+      )}
+
+      {loading ? (
+        <RowSkeleton />
+      ) : (
+        groups.map((loc) => (
+          <DestinationRow key={loc} location={loc} listings={byLocation.get(loc)} onToggleSave={handleToggleSave} />
+        ))
+      )}
+    </main>
+  );
+}
+
+/** Shimmer placeholders for one row while listings load. */
+function RowSkeleton() {
+  return (
+    <div style={{ marginBottom: 40 }}>
+      <div className="sl-skel" style={{ height: 22, width: 240, borderRadius: 6, marginBottom: 16 }} />
+      <div style={{ display: "flex", gap: 16, overflow: "hidden" }}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} aria-hidden="true" style={{ flex: "0 0 auto", width: 280 }}>
+            <div className="sl-skel" style={{ aspectRatio: "1 / 1", width: "100%" }} />
+            <div className="sl-skel" style={{ height: 14, width: "70%", marginTop: 14, borderRadius: 6 }} />
+            <div className="sl-skel" style={{ height: 12, width: "45%", marginTop: 8, borderRadius: 6 }} />
+          </div>
+        ))}
       </div>
-
-      <main style={{ maxWidth: "var(--container-editorial)", margin: "0 auto", padding: "0 40px 64px" }}>
-        {categories.length > 0 && (
-          <CategoryStrip categories={categories} active={category} onSelect={setCategory} />
-        )}
-
-        <h1 style={{ fontSize: "var(--type-display-xl-size)", fontWeight: "var(--type-display-xl-weight)", lineHeight: "var(--type-display-xl-line)", margin: "24px 0", color: "var(--color-ink)" }}>
-          {query ? `Stays matching “${query}”` : "Inspiration for your next trip"}
-        </h1>
-
-        {error && <p style={{ color: "var(--color-error-text)" }}>{error}</p>}
-        {!error && loading && <p style={{ color: "var(--color-muted)" }}>Loading stays…</p>}
-        {!error && !loading && listings.length === 0 && (
-          <p style={{ color: "var(--color-muted)" }}>No stays found. Try a different search or category.</p>
-        )}
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
-          {listings.map((l) => (
-            <PropertyCard key={l.id} image={l.image} title={l.title} subtitle={l.subtitle}
-              price={l.price} rating={l.rating} badge={l.badge} saved={l.saved}
-              onToggleSave={() => handleToggleSave(l.id)} />
-          ))}
-        </div>
-      </main>
-    </>
+    </div>
   );
 }

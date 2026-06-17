@@ -28,23 +28,23 @@ export function AuthModal({ open, onClose, initialMode = "login" }) {
   }
 
   return (
-    <div onClick={onClose} style={scrim}>
-      <div onClick={(e) => e.stopPropagation()} style={card}>
+    <div onClick={onClose} className="sl-scrim" style={scrim}>
+      <div onClick={(e) => e.stopPropagation()} className="sl-modal" style={card}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
           <h2 style={{ fontSize: "var(--type-display-sm-size)", fontWeight: 600, margin: 0 }}>
             {mode === "login" ? "Log in" : "Sign up"}
           </h2>
-          <button onClick={onClose} aria-label="Close" style={closeBtn}>×</button>
+          <button onClick={onClose} aria-label="Close" className="sl-pill" style={closeBtn}>×</button>
         </div>
 
         <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {mode === "register" && (
-            <input style={field} placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
+            <input className="sl-field" style={field} placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} required />
           )}
-          <input style={field} type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <input style={field} type="password" placeholder="Password (min 6 chars)" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
+          <input className="sl-field" style={field} type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input className="sl-field" style={field} type="password" placeholder="Password (min 6 chars)" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
           {error && <span style={{ color: "var(--color-error-text)", fontSize: 14 }}>{error}</span>}
-          <button type="submit" disabled={busy} style={primaryBtn}>
+          <button type="submit" disabled={busy} className="sl-btn-primary" style={primaryBtn}>
             {busy ? "Please wait…" : mode === "login" ? "Log in" : "Create account"}
           </button>
         </form>
@@ -70,12 +70,11 @@ const card = {
   padding: 24, width: 380, maxWidth: "90vw", boxShadow: "var(--shadow-card)",
 };
 const field = {
-  height: 48, borderRadius: "var(--radius-sm)", border: "1px solid var(--color-hairline)",
+  height: 48, borderRadius: "var(--radius-sm)",
   padding: "0 14px", fontSize: 16, fontFamily: "var(--font-family-base)", outline: "none",
 };
 const primaryBtn = {
   height: 48, borderRadius: "var(--radius-sm)", border: "none", cursor: "pointer",
-  background: "var(--color-primary)", color: "var(--color-on-primary)",
   fontSize: 16, fontWeight: 500, fontFamily: "var(--font-family-base)",
 };
 const closeBtn = { border: "none", background: "transparent", fontSize: 24, cursor: "pointer", lineHeight: 1, color: "var(--color-ink)" };
