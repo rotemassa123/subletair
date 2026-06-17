@@ -13,7 +13,6 @@ export default function App() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [langOpen, setLangOpen] = useState(false);
-  const [tab, setTab] = useState("stays");
   const [search, setSearch] = useState({ location: "", checkIn: "", checkOut: "", guests: 0 });
   const [toast, setToast] = useState(null);
 
@@ -23,13 +22,12 @@ export default function App() {
     setToast(`${label} is coming soon`);
     setTimeout(() => setToast(null), 2200);
   }
-  function selectTab(key) { setTab(key); navigate("/"); }
+  function runSearch(s) { setSearch(s); navigate("/"); }
 
   return (
     <div style={{ minHeight: "100vh", background: "var(--color-canvas)" }}>
       <TopNav
-        active={tab}
-        onSelect={selectTab}
+        onSearch={runSearch}
         user={user}
         onLogin={() => openAuth("login")}
         onSignup={() => openAuth("register")}
@@ -41,7 +39,7 @@ export default function App() {
 
       <Routes>
         <Route path="/" element={
-          <Marketplace tab={tab} search={search} onSearch={setSearch} onRequireAuth={() => openAuth("login")} />
+          <Marketplace search={search} onRequireAuth={() => openAuth("login")} />
         } />
         <Route path="/hosting" element={<Hosting onRequireAuth={() => openAuth("login")} />} />
       </Routes>

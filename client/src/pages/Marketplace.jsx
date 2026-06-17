@@ -1,17 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { SearchBar } from "../components/SearchBar.jsx";
 import { CategoryStrip } from "../components/CategoryStrip.jsx";
 import { PropertyCard } from "../components/PropertyCard.jsx";
 import { fetchCategories, fetchListings, toggleSave } from "../api.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 
-const TAB_KIND = { stays: "stay", experiences: "experience", services: "service" };
-const COMING_SOON = {
-  experiences: { title: "Experiences are coming soon", body: "Host-led activities, tours, and Originals will live here. For now, explore Stays." },
-  services: { title: "Services are coming soon", body: "Chefs, photographers, training, and more, bookable with or without a stay. For now, explore Stays." },
-};
-
-export function Marketplace({ tab = "stays", search, onSearch, onRequireAuth }) {
+export function Marketplace({ search, onRequireAuth }) {
   const { user } = useAuth();
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState("all");
@@ -19,22 +12,17 @@ export function Marketplace({ tab = "stays", search, onSearch, onRequireAuth }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const kind = TAB_KIND[tab] || "stay";
-
   useEffect(() => { fetchCategories().then(setCategories).catch(() => setCategories([])); }, []);
 
   useEffect(() => {
-    // Experiences/Services have no inventory yet — skip the fetch and show the
-    // coming-soon state instead of making a discarded request.
-    if (kind !== "stay") { setListings([]); setLoading(false); return; }
     let active = true;
     setLoading(true);
-    fetchListings({ category, kind, ...search })
+    fetchListings({ category, ...search })
       .then((rows) => { if (active) { setListings(rows); setError(null); } })
       .catch(() => active && setError("Couldn't load listings."))
       .finally(() => active && setLoading(false));
     return () => { active = false; };
-  }, [category, kind, search, user]);
+  }, [category, search, user]);
 
   async function handleToggleSave(id) {
     if (!user) return onRequireAuth();
@@ -47,55 +35,39 @@ export function Marketplace({ tab = "stays", search, onSearch, onRequireAuth }) 
     }
   }
 
-  const soon = COMING_SOON[tab];
   const heading = search.location ? `Stays in ${search.location}` : "Inspiration for your next trip";
 
   return (
-    <>
-      <div className="sl-gutter sl-hero-in" style={{ position: "relative", zIndex: 30, display: "flex", justifyContent: "center", paddingTop: 20, paddingBottom: 24, borderBottom: "1px solid var(--color-hairline-soft)" }}>
-        <SearchBar tab={tab} onSearch={onSearch} />
+    <main className="sl-gutter" style={{ maxWidth: "var(--container-editorial)", margin: "0 auto", paddingBottom: 64 }}>
+      {categories.length > 0 && (
+        <CategoryStrip categories={categories} active={category} onSelect={setCategory} />
+      )}
+
+      <h1 className="sl-hero-in" style={{ fontSize: "var(--type-display-xl-size)", fontWeight: "var(--type-display-xl-weight)", lineHeight: "var(--type-display-xl-line)", margin: "24px 0", color: "var(--color-ink)" }}>
+        {heading}
+      </h1>
+
+      {error && <p style={{ color: "var(--color-error-text)" }}>{error}</p>}
+      {!error && !loading && listings.length === 0 && (
+        <p style={{ color: "var(--color-muted)" }}>No stays match your search. Try different dates, fewer guests, or another destination.</p>
+      )}
+
+      {/* keyed by the active filter so the whole grid re-reveals when results change */}
+      <div key={`${category}|${search.location}|${search.checkIn}|${search.checkOut}|${search.guests}`} style={gridStyle}>
+        {loading
+          ? Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)
+          : listings.map((l, i) => (
+              <PropertyCard
+                key={l.id}
+                className="sl-reveal"
+                style={{ animationDelay: `${Math.min(i, 11) * 45}ms` }}
+                image={l.image} title={l.title} subtitle={l.subtitle}
+                price={l.price} rating={l.rating} badge={l.badge} saved={l.saved}
+                onToggleSave={() => handleToggleSave(l.id)}
+              />
+            ))}
       </div>
-
-      <main className="sl-gutter" style={{ maxWidth: "var(--container-editorial)", margin: "0 auto", paddingBottom: 64 }}>
-        {soon ? (
-          <div className="sl-hero-in" style={{ padding: "96px 0", textAlign: "center", maxWidth: 520, margin: "0 auto" }}>
-            <h1 style={{ fontSize: "var(--type-display-xl-size)", fontWeight: 700, margin: "0 0 12px" }}>{soon.title}</h1>
-            <p style={{ fontSize: 16, color: "var(--color-muted)", lineHeight: 1.5 }}>{soon.body}</p>
-          </div>
-        ) : (
-          <>
-            {categories.length > 0 && (
-              <CategoryStrip categories={categories} active={category} onSelect={setCategory} />
-            )}
-
-            <h1 className="sl-hero-in" style={{ fontSize: "var(--type-display-xl-size)", fontWeight: "var(--type-display-xl-weight)", lineHeight: "var(--type-display-xl-line)", margin: "24px 0", color: "var(--color-ink)" }}>
-              {heading}
-            </h1>
-
-            {error && <p style={{ color: "var(--color-error-text)" }}>{error}</p>}
-            {!error && !loading && listings.length === 0 && (
-              <p style={{ color: "var(--color-muted)" }}>No stays match your search. Try different dates, fewer guests, or another destination.</p>
-            )}
-
-            {/* keyed by the active filter so the whole grid re-reveals when results change */}
-            <div key={`${category}|${kind}|${search.location}|${search.checkIn}|${search.checkOut}|${search.guests}`} style={gridStyle}>
-              {loading
-                ? Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)
-                : listings.map((l, i) => (
-                    <PropertyCard
-                      key={l.id}
-                      className="sl-reveal"
-                      style={{ animationDelay: `${Math.min(i, 11) * 45}ms` }}
-                      image={l.image} title={l.title} subtitle={l.subtitle}
-                      price={l.price} rating={l.rating} badge={l.badge} saved={l.saved}
-                      onToggleSave={() => handleToggleSave(l.id)}
-                    />
-                  ))}
-            </div>
-          </>
-        )}
-      </main>
-    </>
+    </main>
   );
 }
 
