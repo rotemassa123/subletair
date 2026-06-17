@@ -69,6 +69,17 @@
 .sl-search-orb:hover { transform: scale(1.05); }
 .sl-search-orb:active { transform: scale(0.96); background: var(--color-primary-active); }
 
+/* ---------- Destination rows ---------- */
+.sl-row-track { scrollbar-width: none; -ms-overflow-style: none; }
+.sl-row-track::-webkit-scrollbar { display: none; }
+.sl-chev {
+  transition: background-color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard),
+              transform var(--duration-fast) var(--ease-standard);
+}
+.sl-chev:hover { background: var(--color-surface-soft); border-color: var(--color-ink); }
+.sl-chev:active { transform: scale(0.94); }
+
 /* ---------- Category strip ---------- */
 .sl-chip {
   color: var(--color-muted);

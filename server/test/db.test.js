@@ -35,11 +35,12 @@ test("filters by location (destination match)", () => {
 });
 
 test("filters by availability date range (range must cover the stay)", () => {
-  // Pine cabin (id 3) is July-only.
+  // The Pine cabin is July-only.
+  const cabin = db.getListings({}).find((l) => l.title === "Pine cabin near the trailhead");
   const julyHit = db.getListings({ checkIn: "2026-07-04", checkOut: "2026-07-08" });
-  assert.ok(julyHit.some((l) => l.id === 3), "July stay includes the July-only cabin");
+  assert.ok(julyHit.some((l) => l.id === cabin.id), "July stay includes the July-only cabin");
   const marchMiss = db.getListings({ checkIn: "2026-03-04", checkOut: "2026-03-08" });
-  assert.ok(!marchMiss.some((l) => l.id === 3), "March stay excludes the July-only cabin");
+  assert.ok(!marchMiss.some((l) => l.id === cabin.id), "March stay excludes the July-only cabin");
 });
 
 test("kind filter returns empty for non-stay products", () => {

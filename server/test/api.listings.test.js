@@ -114,7 +114,7 @@ test("GET /api/listings filters by guests, location, dates, kind", async () => {
   const tahoe = await (await fetch(base + "/api/listings?location=Tahoe")).json();
   assert.ok(tahoe.every((l) => /tahoe/i.test(l.location)));
   const july = await (await fetch(base + "/api/listings?checkIn=2026-07-04&checkOut=2026-07-08")).json();
-  assert.ok(july.some((l) => l.id === 3));
+  assert.ok(july.some((l) => l.title === "Pine cabin near the trailhead"));
   const exp = await (await fetch(base + "/api/listings?kind=experience")).json();
   assert.equal(exp.length, 0);
 });

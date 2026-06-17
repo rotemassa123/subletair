@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CategoryStrip } from "../components/CategoryStrip.jsx";
-import { PropertyCard } from "../components/PropertyCard.jsx";
+import { DestinationRow } from "../components/DestinationRow.jsx";
 import { fetchCategories, fetchListings, toggleSave } from "../api.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 
@@ -35,10 +35,19 @@ export function Marketplace({ search, onRequireAuth }) {
     }
   }
 
+  // Group listings into one row per destination, in order of first appearance.
+  const groups = [];
+  const byLocation = new Map();
+  for (const l of listings) {
+    const key = l.location || "Other";
+    if (!byLocation.has(key)) { byLocation.set(key, []); groups.push(key); }
+    byLocation.get(key).push(l);
+  }
+
   const heading = search.location ? `Stays in ${search.location}` : "Inspiration for your next trip";
 
   return (
-    <main className="sl-gutter" style={{ maxWidth: "var(--container-editorial)", margin: "0 auto", paddingBottom: 64 }}>
+    <main className="sl-gutter" style={{ maxWidth: "none", paddingBottom: 64 }}>
       {categories.length > 0 && (
         <CategoryStrip categories={categories} active={category} onSelect={setCategory} />
       )}
@@ -52,34 +61,31 @@ export function Marketplace({ search, onRequireAuth }) {
         <p style={{ color: "var(--color-muted)" }}>No stays match your search. Try different dates, fewer guests, or another destination.</p>
       )}
 
-      {/* keyed by the active filter so the whole grid re-reveals when results change */}
-      <div key={`${category}|${search.location}|${search.checkIn}|${search.checkOut}|${search.guests}`} style={gridStyle}>
-        {loading
-          ? Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)
-          : listings.map((l, i) => (
-              <PropertyCard
-                key={l.id}
-                className="sl-reveal"
-                style={{ animationDelay: `${Math.min(i, 11) * 45}ms` }}
-                image={l.image} title={l.title} subtitle={l.subtitle}
-                price={l.price} rating={l.rating} badge={l.badge} saved={l.saved}
-                onToggleSave={() => handleToggleSave(l.id)}
-              />
-            ))}
-      </div>
+      {loading ? (
+        <RowSkeleton />
+      ) : (
+        groups.map((loc) => (
+          <DestinationRow key={loc} location={loc} listings={byLocation.get(loc)} onToggleSave={handleToggleSave} />
+        ))
+      )}
     </main>
   );
 }
 
-const gridStyle = { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 };
-
-/** Shimmer placeholder matching the PropertyCard footprint (photo + two meta lines). */
-function CardSkeleton() {
+/** Shimmer placeholders for one row while listings load. */
+function RowSkeleton() {
   return (
-    <div aria-hidden="true">
-      <div className="sl-skel" style={{ aspectRatio: "1 / 1", width: "100%" }} />
-      <div className="sl-skel" style={{ height: 14, width: "70%", marginTop: 14, borderRadius: 6 }} />
-      <div className="sl-skel" style={{ height: 12, width: "45%", marginTop: 8, borderRadius: 6 }} />
+    <div style={{ marginBottom: 40 }}>
+      <div className="sl-skel" style={{ height: 22, width: 240, borderRadius: 6, marginBottom: 16 }} />
+      <div style={{ display: "flex", gap: 16, overflow: "hidden" }}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} aria-hidden="true" style={{ flex: "0 0 auto", width: 280 }}>
+            <div className="sl-skel" style={{ aspectRatio: "1 / 1", width: "100%" }} />
+            <div className="sl-skel" style={{ height: 14, width: "70%", marginTop: 14, borderRadius: 6 }} />
+            <div className="sl-skel" style={{ height: 12, width: "45%", marginTop: 8, borderRadius: 6 }} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
