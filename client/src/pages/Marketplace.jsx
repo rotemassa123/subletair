@@ -52,7 +52,7 @@ export function Marketplace({ tab = "stays", search, onSearch, onRequireAuth }) 
 
   return (
     <>
-      <div className="sl-gutter sl-hero-in" style={{ display: "flex", justifyContent: "center", paddingTop: 20, paddingBottom: 24, borderBottom: "1px solid var(--color-hairline-soft)" }}>
+      <div className="sl-gutter sl-hero-in" style={{ position: "relative", zIndex: 30, display: "flex", justifyContent: "center", paddingTop: 20, paddingBottom: 24, borderBottom: "1px solid var(--color-hairline-soft)" }}>
         <SearchBar tab={tab} onSearch={onSearch} />
       </div>
 
